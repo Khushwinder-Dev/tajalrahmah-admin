@@ -36,8 +36,6 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
           <div className="relative z-10 flex flex-col items-center justify-center">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-wider leading-[1.08] drop-shadow-sm font-sans uppercase">
               RAPID
-              <br />
-              ERP
             </h1>
           </div>
         </div>
