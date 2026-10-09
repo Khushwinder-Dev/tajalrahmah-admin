@@ -25,7 +25,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
       <div className="absolute inset-0 bg-blue-900/10 backdrop-blur-[1px] pointer-events-none" />
 
       {/* Main Split Card */}
-      <div className="relative z-10 w-full max-w-[860px] bg-white dark:bg-slate-900 rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.25)] overflow-hidden flex flex-col md:flex-row transition-all duration-300 border border-white/40 dark:border-slate-800">
+      <div className="relative z-10 w-full max-w-[860px] bg-white dark:bg-slate-900 rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.25)] overflow-hidden flex flex-col md:flex-row transition-all duration-300">
         {/* Left Side: Brand Banner ("RAPID ERP") */}
         <div className="w-full md:w-[46%] bg-gradient-to-br from-[#3cb0f7] via-[#2ba0ee] to-[#1a85db] p-8 sm:p-10 md:p-12 flex flex-col items-center justify-center text-center relative overflow-hidden select-none min-h-[180px] md:min-h-[460px]">
           {/* Subtle decorative circles */}
