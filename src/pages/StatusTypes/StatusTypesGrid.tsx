@@ -1,0 +1,375 @@
+import { Card, CardTitle } from "@/components/ui/card";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
+import GridFilterComponent from "@/pages/Country/GridFilterComponent";
+import useIsMobile from "@/hooks/useIsMobile";
+
+type ActionType = {
+  id: string;
+  code: string;
+  name: string;
+  status: "Active" | "Inactive" | "Draft";
+  isDeleted: boolean;
+};
+
+// Mock data - replace with real data from your API
+const actionTypes: ActionType[] = [
+  {
+    id: "1",
+    code: "TODO",
+    name: "To Do",
+    status: "Active",
+    isDeleted: false,
+  },
+  {
+    id: "2",
+    code: "IN_PROGRESS",
+    name: "In Progress",
+    status: "Active",
+    isDeleted: false,
+  },
+  {
+    id: "3",
+    code: "INACTIVE",
+    name: "Inactive",
+    status: "Active",
+    isDeleted: false,
+  },
+  {
+    id: "4",
+    code: "INACTIVE",
+    name: "Inactive",
+    status: "Inactive",
+    isDeleted: false,
+  },
+  {
+    id: "5",
+    code: "INACTIVE",
+    name: "Inactive",
+    status: "Active",
+    isDeleted: false,
+  },
+  {
+    id: "6",
+    code: "INACTIVE",
+    name: "Inactive",
+    status: "Draft",
+    isDeleted: false,
+  },
+  {
+    id: "7",
+    code: "DRAFT",
+    name: "Draft",
+    status: "Active",
+    isDeleted: false,
+  },
+  {
+    id: "8",
+    code: "CANCEL",
+    name: "Cancel",
+    status: "Active",
+    isDeleted: false,
+  },
+  {
+    id: "9",
+    code: "ARCHIVE",
+    name: "Archive Action",
+    status: "Inactive",
+    isDeleted: false,
+  },
+  {
+    id: "10",
+    code: "RESTORE",
+    name: "Restore Action",
+    status: "Active",
+    isDeleted: false,
+  },
+];
+
+type Props = {
+  searchQuery: string;
+  setIsFilterOpen: (isFilterOpen: boolean) => void;
+  isFilterOpen: boolean;
+  setIsExportOpen: (isExportOpen: boolean) => void;
+  isExportOpen: boolean;
+};
+
+export default function ActionTypesGrid({
+  searchQuery,
+  setIsFilterOpen,
+  isFilterOpen,
+  setIsExportOpen,
+  isExportOpen,
+}: Props) {
+  console.log("Action types grid rendered");
+
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { isRTL } = useSelector((state: RootState) => state.language);
+  const isMobile = useIsMobile();
+
+  const [actionTypesData, setActionTypesData] = useState(actionTypes);
+
+  // Infinite scroll states
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [, setPage] = useState(1);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const ITEMS_PER_PAGE = 4;
+
+  // Simulate API call to load more data
+  const loadMoreData = useCallback(async () => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    const statuses: ActionType["status"][] = ["Active", "Inactive", "Draft"];
+    const newItems = Array.from({ length: ITEMS_PER_PAGE }, (_, index) => ({
+      id: `${Date.now()}-${index}`,
+      code: `ACT${(actionTypesData.length + index + 1)
+        .toString()
+        .padStart(3, "0")}`,
+      name: `Action Type ${actionTypesData.length + index + 1}`,
+      status: statuses[Math.floor(Math.random() * statuses.length)],
+      isDeleted: false,
+    }));
+
+    // Stop loading more after reaching 50 items for demo
+    if (actionTypesData.length >= 46) {
+      setHasMore(false);
+    } else {
+      setActionTypesData((prev) => [...prev, ...newItems]);
+      setPage((prev) => prev + 1);
+    }
+
+    setIsLoading(false);
+  }, [actionTypesData.length, isLoading, hasMore]);
+
+  // Infinite scroll handler
+  const handleScroll = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    const threshold = 100; // Load more when 100px from bottom
+
+    if (scrollHeight - scrollTop <= clientHeight + threshold) {
+      loadMoreData();
+    }
+  }, [loadMoreData]);
+
+  // Add scroll event listener
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  // Filter action types based on search query
+  const filteredActionTypes = actionTypesData.filter(
+    (actionType) =>
+      actionType.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      actionType.code.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleViewClick = (actionTypeId: string) => {
+    const viewMode = searchParams.get("view") || "grid";
+    navigate(`/action-types/view/${actionTypeId}?fromView=${viewMode}`);
+  };
+
+  return (
+    <div
+      className={cn(
+        "h-full flex flex-col bg-white dark:bg-gray-900 parent relative rounded-lg overflow-hidden"
+      )}
+    >
+      {/* Main content area */}
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Cards container with animated width */}
+        <div
+          ref={scrollContainerRef}
+          className={cn(
+            "overflow-y-auto grid-scroll transition-all duration-300 ease-in-out",
+            isRTL ? "" : ""
+          )}
+          style={{
+            width: isFilterOpen || isExportOpen ? "calc(100% - 320px)" : "100%",
+          }}
+        >
+          <div
+            className={cn(
+              "grid gap-6 pb-4 p-5",
+              // Mobile: 1 column, Tablet: 2 columns, Desktop: 3-4 columns
+              isMobile
+                ? "grid-cols-1"
+                : "grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+            )}
+          >
+            {filteredActionTypes.map((actionType) => (
+              <Card
+                key={actionType.id}
+                className={cn(
+                  "transition-all relative group dark:bg-gray-800 duration-200 w-full shadow-[2px_3px_8px_0_rgba(0,0,0,0.10)] border-[#E2E4EB] border border-solid rounded-[12px] flex p-5 flex-col items-start gap-5 cursor-pointer",
+                  // Different hover effects for mobile vs desktop
+                  isMobile
+                    ? "hover:shadow-lg hover:border-primary"
+                    : "hover:scale-110 hover:z-50 hover:relative hover:border-primary min-w-[250px]"
+                )}
+                onClick={() => handleViewClick(actionType.id)}
+              >
+                {/* Top Row - Name */}
+                <div className="w-full mt-[-8px]">
+                  <CardTitle
+                    className="text-base font-normal transition-colors truncate"
+                    style={{ fontSize: "18px" }}
+                  >
+                    {actionType.name}
+                  </CardTitle>
+                </div>
+
+                {/* Middle Row - Code and Status */}
+                <div className="grid grid-cols-2 gap-2 w-full">
+                  {/* Code - Left */}
+                  <div className="min-w-0">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Code
+                    </div>
+                    <div className="text-sm font-normal text-gray-900 dark:text-gray-100 truncate">
+                      {actionType.code}
+                    </div>
+                  </div>
+
+                  {/* Status - Right */}
+                  <div className="text-right min-w-0">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Status
+                    </div>
+                    <div
+                      className={cn(
+                        "text-sm font-normal truncate",
+                        actionType.status === "Active"
+                          ? "text-green-600 dark:text-green-400"
+                          : actionType.status === "Inactive"
+                          ? "text-red-600 dark:text-red-400"
+                          : "text-yellow-600 dark:text-yellow-400"
+                      )}
+                    >
+                      {actionType.status}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="flex justify-center items-center py-8">
+              <div className="flex items-center gap-2 text-blue-600">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                <span className="text-sm">Loading more action types...</span>
+              </div>
+            </div>
+          )}
+
+          {/* End of data indicator */}
+          {!hasMore && filteredActionTypes.length > 12 && (
+            <div className="flex justify-center items-center py-8">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                No more action types to load
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Animated Filter Panel */}
+        <div
+          className={cn(
+            "absolute top-0 h-full transition-all duration-300 ease-in-out transform z-10",
+            isRTL ? "left-0" : "right-0",
+            isFilterOpen
+              ? "translate-x-0 opacity-100 visible"
+              : isRTL
+              ? "-translate-x-full opacity-0 invisible"
+              : "translate-x-full opacity-0 invisible"
+          )}
+          style={{
+            width: isMobile ? "100%" : "320px",
+          }}
+        >
+          <div className={cn("h-full", isMobile ? "pb-4 mt-1" : "p-2")}>
+            <div
+              className={cn(
+                "w-full flex-shrink-0 border rounded-[20px] border-gray-200 dark:border-gray-700 h-full bg-white dark:bg-gray-800 shadow-2xl transition-all duration-300 ease-in-out",
+                isFilterOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
+              )}
+            >
+              <GridFilterComponent
+                key={`filter-panel-${isFilterOpen}`}
+                data={actionTypes}
+                setFilteredData={setActionTypesData}
+                setShowTabs={setIsFilterOpen}
+                defaultTab="filter"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Animated Export Panel */}
+        <div
+          className={cn(
+            "absolute top-0 h-full transition-all duration-300 ease-in-out transform z-10",
+            isRTL ? "left-0" : "right-0",
+            isExportOpen
+              ? "translate-x-0 opacity-100"
+              : isRTL
+              ? "-translate-x-full opacity-0"
+              : "translate-x-full opacity-0"
+          )}
+          style={{
+            width: isMobile ? "100%" : "320px",
+          }}
+        >
+          <div className={cn("h-full", isMobile ? "pb-4 mt-1" : "p-2")}>
+            <div
+              className={cn(
+                "w-full flex-shrink-0 border rounded-[20px] border-gray-200 dark:border-gray-700 h-full bg-white dark:bg-gray-800 shadow-2xl transition-all duration-300 ease-in-out",
+                isExportOpen ? "opacity-100" : "opacity-0"
+              )}
+            >
+              <GridFilterComponent
+                key={`export-panel-${isExportOpen}`}
+                data={actionTypes}
+                setFilteredData={setActionTypesData}
+                setShowTabs={setIsExportOpen}
+                defaultTab="export"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Backdrop overlay for mobile/smaller screens */}
+        {(isFilterOpen || isExportOpen) && (
+          <div
+            className={cn(
+              "fixed inset-0 bg-black bg-opacity-30 transition-opacity duration-300 ease-in-out z-5",
+              isMobile ? "" : "md:hidden",
+              isFilterOpen || isExportOpen ? "opacity-100" : "opacity-0"
+            )}
+            onClick={() => {
+              setIsFilterOpen(false);
+              setIsExportOpen(false);
+            }}
+          />
+        )}
+      </div>
+    </div>
+  );
+}

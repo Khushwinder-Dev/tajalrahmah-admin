@@ -1,0 +1,70 @@
+{
+  "sidebar": {
+    "menu": {
+      "search": "بحث",
+      "dashboard": "لوحة التحكم",
+      "users": "المستخدمين",
+      "userMaster": "إدارة المستخدمين",
+      "states": "الولايات",
+      "cities": "المدن",
+      "areas": "المناطق",
+      "currencies": "العملات",
+      "department": "الإدارات",
+      "designation": "المناصب",
+      "employee": "الموظفين",
+      "companies": "الشركات",
+      "branches": "الفروع",
+      "store": "المتجر",
+      "pos": "نقاط البيع",
+      "table": "طاولة",
+      "waiters": "النوادل",
+      "country": "الدول",
+      "category": "الفئات",
+      "product": "المنتجات",
+      "order": "الطلبات",
+      "report": "التقارير",
+      "settings": "الإعدادات"
+    },
+    "search": {
+      "placeholder": "ابحث...",
+      "results": "نتائج البحث عن: {{query}}",
+      "tabs": {
+        "general": "عام",
+        "favourite": "المفضلة",
+        "recent": "حديث"
+      }
+    },
+    "dashboard": {
+      "title": "لوحة التحكم",
+      "content": "محتوى لوحة التحكم هنا..."
+    },
+    "close": "إغلاق"
+  },
+  "form": {
+    "creatingTable": "إنشاء طاولة",
+    "editingTable": "تعديل طاولة",
+    "viewingTable": "عرض طاولة",
+    "tableName": "اسم الطاولة",
+    "tableNamePlaceholder": "أدخل اسم الطاولة",
+    "tableHistory": "تاريخ الطاولة",
+    "code": "الرمز",
+    "country": "الدولة",
+    "state": "الولاية",
+    "city": "المدينة",
+    "postCode": "الرمز البريدي",
+    "bankDetails": "تفاصيل البنك",
+    "resetConfirm": "هل أنت متأكد من إعادة تعيين النموذج؟"
+  },
+  "common": {
+    "default": "افتراضي",
+    "active": "نشط",
+    "draft": "مسودة"
+  },
+  "button": {
+    "reset": "إعادة تعيين",
+    "submit": "إرسال",
+    "delete": "حذف",
+    "restore": "استعادة",
+    "keep": "احتفظ"
+  }
+}

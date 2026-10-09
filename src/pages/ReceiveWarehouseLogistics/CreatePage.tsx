@@ -1,0 +1,615 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import video from "@/assets/videos/test.mp4";
+import { Autocomplete } from "@/components/common/Autocomplete";
+
+import PageLayout from "@/components/common/PageLayout";
+import GenericPDF from "@/components/common/pdf";
+import { ResetFormModal } from "@/components/common/ResetFormModal";
+import ReusableFormGenerator from "@/components/Logistic/ReusableModuleGenerator";
+import { Button } from "@/components/ui/button";
+import { PrintCommonLayout } from "@/lib/printContents/PrintCommonLayout";
+import { printHtmlContent } from "@/lib/printHtmlContent";
+import { toastError, toastSuccess } from "@/lib/toast";
+import { Modal } from "@mantine/core";
+import { pdf } from "@react-pdf/renderer";
+import { Edit, Eye, Plus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { usePermission } from "@/hooks/usePermissions";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
+// import EditableInput from "@/components/ArabicDateInput";
+
+type PurchaseOrderLogisticData = {
+  country: string;
+  company: string;
+  note: string;
+  isActive: boolean;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  isDeleted: boolean;
+};
+
+type Props = {
+  isEdit?: boolean;
+};
+
+const initialData: PurchaseOrderLogisticData = {
+  country: "Saudi Arabia",
+  company: "Al-Rashid Trading Company",
+  note: "we are using dummy data for testing!",
+  isActive: true,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  isDeleted: false,
+};
+
+export default function ReceiveWarehouseLogisticFormPage({
+  isEdit = false,
+}: Props) {
+  const navigate = useNavigate();
+  const { isRTL } = useSelector((state: RootState) => state.language);
+
+  const [keepCreating, setKeepCreating] = useState(false);
+  const [isOptionModalOpen, setIsOptionModalOpen] = useState(false);
+
+  const [printEnabled, setPrintEnabled] = useState(false);
+  const [pdfChecked, setPdfChecked] = useState(false);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+
+  // Permission checks
+  const canCreate = usePermission("receiveWarehouseLogistics", "create");
+  const canView = usePermission("receiveWarehouseLogistics", "view");
+  const canEdit = usePermission("receiveWarehouseLogistics", "edit");
+  const canDelete = usePermission("receiveWarehouseLogistics", "delete");
+
+  console.log("canCreate", canCreate);
+  console.log("canView", canView);
+  console.log("canEdit", canEdit);
+  console.log("canDelete", canDelete);
+
+  // Field-level permissions
+  const permissionsFields = usePermission<keyof PurchaseOrderLogisticData>(
+    "receiveWarehouseLogistics",
+    "create",
+    ["country", "company", "note"]
+  );
+
+  const canPdf: boolean = usePermission("receiveWarehouseLogistics", "pdf");
+  const canPrint: boolean = usePermission("receiveWarehouseLogistics", "print");
+
+  console.log("canPdf", canPdf);
+  console.log("canPrint", canPrint);
+
+  const countryOptions = [
+    "Saudi Arabia",
+    "UAE",
+    "Kuwait",
+    "Bahrain",
+    "Qatar",
+    "Oman",
+    "Jordan",
+    "Lebanon",
+    "Egypt",
+    "Iraq",
+    "Turkey",
+    "Greece",
+    "India",
+    "Pakistan",
+    "Bangladesh",
+    "Sri Lanka",
+    "Malaysia",
+    "Singapore",
+    "Indonesia",
+    "Thailand",
+    "Vietnam",
+    "Philippines",
+    "China",
+    "Japan",
+    "South Korea",
+    "Australia",
+    "New Zealand",
+    "United States",
+    "Canada",
+    "United Kingdom",
+    "Germany",
+    "France",
+    "Italy",
+    "Spain",
+    "Netherlands",
+    "Belgium",
+    "Switzerland",
+    "Austria",
+    "Sweden",
+    "Norway",
+    "Denmark",
+    "Finland",
+  ];
+
+  const companyOptions = [
+    "Al-Rashid Trading Company",
+    "Al-Zahrani Enterprises",
+    "Al-Otaibi Industries",
+    "Al-Shehri Solutions",
+    "Al-Ghamdi Trading",
+    "Al-Harbi Corporation",
+    "Al-Maktoum Trading",
+    "Al-Nahyan Enterprises",
+    "Al-Qasimi Trading",
+    "Al-Sharqi Corporation",
+    "Al-Sabah Trading",
+    "Al-Khalifa Enterprises",
+    "Al-Thani Trading Company",
+    "Al-Said Enterprises",
+    "Al-Hashemi Corporation",
+    "Aoun Trading Solutions",
+    "El-Sisi Enterprises",
+    "Al-Kadhimi Trading",
+    "Erdogan Trading",
+    "Mitsotakis Enterprises",
+  ];
+
+  // Form state
+  const [formData, setFormData] = useState<PurchaseOrderLogisticData>({
+    country: "",
+    company: "",
+    note: "",
+    isActive: true,
+    isDeleted: false,
+    createdAt: null,
+    updatedAt: null,
+  });
+
+  // Transit Order form data for the reusable component
+  const [transitOrderData, setTransitOrderData] = useState<any>({});
+
+  const [popoverOptions] = useState([
+    {
+      label: isEdit ? "Create" : "Edit",
+      icon: isEdit ? (
+        <Plus className="w-5 h-5 text-green-500" /> // Green for Plus
+      ) : (
+        <Edit className="w-5 h-5 text-blue-500" /> // Blue for Edit
+      ),
+      onClick: () => {
+        if (isEdit) {
+          navigate("/receive-warehouse-logistics/create");
+        } else {
+          navigate("/receive-warehouse-logistics/edit/undefined");
+        }
+      },
+      // Only show if user has permission
+      show: canCreate,
+    },
+    {
+      label: "View",
+      icon: <Eye className="w-5 h-5 text-green-600" />, // Added neutral color for Eye
+      onClick: () => {
+        navigate("/receive-warehouse-logistics/view");
+      },
+      // Only show if user has permission
+      show: canView,
+    },
+  ]);
+
+  // focus next input field
+  const inputRefs = useRef<Record<string, HTMLElement | null>>({});
+  const setRef = (name: string) => (el: HTMLElement | null) => {
+    inputRefs.current[name] = el;
+  };
+  const focusNextInput = (nextField: string) => {
+    inputRefs.current[nextField]?.focus();
+  };
+
+  // Initialize with edit data if available
+  useEffect(() => {
+    if (isEdit && initialData) {
+      setFormData({
+        ...initialData,
+      });
+    }
+  }, [isEdit]);
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form submitted:", formData);
+    // Normal submit logic here (API call)------------
+
+    if (pdfChecked) {
+      await handleExportPDF();
+    }
+    if (printEnabled) {
+      handlePrintTransitOrder(formData);
+    }
+
+    // keep switch functionality
+    if (keepCreating) {
+      toastSuccess("Logistics Warehouse created successfully!");
+      handleReset();
+    } else {
+      toastSuccess("Logistics Warehouse created successfully!");
+      navigate("/receive-warehouse-logistics");
+    }
+  };
+
+  const handleResetClick = () => {
+    setIsResetModalOpen(true);
+  };
+
+  //   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value, type, checked } = e.target;
+  //   setFormData({
+  //     ...formData,
+  //     [name]: type === "checkbox" ? checked : value,
+  //   });
+  // };
+
+  // Add this state
+  const [formKey, setFormKey] = useState(0);
+
+  // Update handleReset function
+  const handleReset = () => {
+    setFormData({
+      country: "",
+      company: "",
+      note: "",
+      isActive: true,
+      isDeleted: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    if (formRef.current) {
+      formRef.current.reset();
+    }
+
+    // Force re-render of all inputs by changing key
+    setFormKey((prev) => prev + 1);
+
+    // Focus the first input field after reset
+    setTimeout(() => {
+      inputRefs.current["country"]?.focus();
+    }, 100); // Slightly longer delay to ensure re-render is complete
+  };
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handlePrintTransitOrder = (transitOrderData: any) => {
+    try {
+      const html = PrintCommonLayout({
+        title: "Transit Order Details",
+        data: [transitOrderData],
+        excludeFields: ["id", "__v", "_id"],
+        fieldLabels: {
+          sn: "SN",
+          country: "Country",
+          company: "Company",
+          piNo: "P.I.No",
+          invoiceNo: "Invoice No",
+          supplierName: "Supplier Name",
+          status: "Status",
+          date: "Date",
+          loginId: "Login ID",
+          isDefault: "Default Transit Order",
+          isActive: "Active Status",
+          isDraft: "Draft Status",
+          isDeleted: "Deleted Status",
+          createdAt: "Created At",
+          updatedAt: "Updated At",
+          draftedAt: "Drafted At",
+          deletedAt: "Deleted At",
+        },
+      });
+      printHtmlContent(html);
+    } catch (error) {
+      console.log(error);
+      toastError("Something went wrong when printing");
+    }
+  };
+
+  const handleSwitchChange = (checked: boolean) => {
+    setPrintEnabled(checked);
+  };
+
+  const handlePDFSwitchChange = (pdfChecked: boolean) => {
+    setPdfChecked(pdfChecked);
+  };
+
+  const handleExportPDF = async () => {
+    console.log("Export PDF clicked");
+    try {
+      console.log("transitOrderData on pdf click", formData);
+      const blob = await pdf(
+        <GenericPDF
+          data={[formData]}
+          title="Transit Order Details"
+          subtitle="Transit Order Information"
+        />
+      ).toBlob();
+
+      console.log("blob", blob);
+
+      const url = URL.createObjectURL(blob);
+      console.log("url", url);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "transit-order-details.pdf";
+      a.click();
+      console.log("a", a);
+      console.log("url", url);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.log(error);
+      toastError("Something went wrong when generating PDF");
+    }
+  };
+
+  return (
+    <>
+      <PageLayout
+        title={
+          isEdit
+            ? "Editing Receive Warehouse Logistic"
+            : "Creating Receive Warehouse Logistic"
+        }
+        videoSrc={video}
+        videoHeader="Tutorial video"
+        listPath="receive-warehouse-logistics"
+        popoverOptions={popoverOptions}
+        keepChanges={keepCreating}
+        onKeepChangesChange={setKeepCreating}
+        pdfChecked={pdfChecked}
+        onPdfToggle={canPdf ? handlePDFSwitchChange : undefined}
+        printEnabled={printEnabled}
+        onPrintToggle={canPrint ? handleSwitchChange : undefined}
+        activePage="create"
+        // Removed onExport prop
+        additionalFooterButtons={
+          // Only show buttons if user can create
+          canCreate ? (
+            <div className="flex gap-4 items-center">
+              <Button
+                variant="outline"
+                className="gap-2 text-primary bg-sky-200 hover:bg-primary rounded-full border-primary w-32 font-semibold!"
+                onClick={handleResetClick}
+              >
+                Reset
+              </Button>
+              <Button
+                ref={(el) => setRef("submitButton")(el as HTMLButtonElement)}
+                id="submitButton"
+                name="submitButton"
+                variant="outline"
+                className={`gap-2 text-primary rounded-full border-primary w-32 bg-sky-200 hover:bg-primary font-semibold!`}
+                onClick={() => formRef.current?.requestSubmit()}
+              >
+                Submit
+              </Button>
+            </div>
+          ) : null
+        }
+        className="w-full"
+      >
+        <div dir={isRTL ? "rtl" : "ltr"}>
+          <form
+            ref={formRef}
+            key={formKey}
+            onSubmit={handleSubmit}
+            className="space-y-6 relative"
+          >
+            {/* Purchase Order Logistic Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-8 relative">
+              {permissionsFields.country && (
+                <div className="space-y-2">
+                  <Autocomplete
+                    ref={(el: any) => setRef("country")(el)}
+                    id="country"
+                    name="country"
+                    options={countryOptions}
+                    value={formData.country}
+                    labelClassName="rounded-lg"
+                    onValueChange={(value: string) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        country: value,
+                      }));
+                      focusNextInput("company");
+                    }}
+                    onEnterPress={() => {
+                      if (formData.country) {
+                        focusNextInput("company");
+                      }
+                    }}
+                    placeholder=" "
+                    labelText="Country"
+                    className="relative"
+                    styles={{
+                      input: {
+                        borderColor: "var(--primary)",
+                        "&:focus": {
+                          borderColor: "var(--primary)",
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              )}
+
+              {permissionsFields.company && (
+                <div className="space-y-2">
+                  <Autocomplete
+                    ref={(el: any) => setRef("company")(el)}
+                    id="company"
+                    name="company"
+                    options={companyOptions}
+                    value={formData.company}
+                    labelClassName="rounded-lg"
+                    onValueChange={(value: string) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        company: value,
+                      }));
+                      focusNextInput("submitButton");
+                    }}
+                    onEnterPress={() => {
+                      if (formData.company) {
+                        focusNextInput("submitButton");
+                      }
+                    }}
+                    placeholder=" "
+                    labelText="Company"
+                    className="relative"
+                    styles={{
+                      input: {
+                        borderColor: "var(--primary)",
+                        "&:focus": {
+                          borderColor: "var(--primary)",
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              )}
+              {/* {canCreate && (
+                <div className="md:col-span-3 space-y-2">
+                  <div className="relative">
+                    <EditableInput
+                      setRef={setRef("note")}
+                      id="note"
+                      name="note"
+                      value={formData.note}
+                      onChange={handleChange}
+                      onNext={() => focusNextInput("country")}
+                      onCancel={() => setFormData({ ...formData, note: "" })}
+                      labelText="Note"
+                      tooltipText="Note"
+                      required
+                    />
+                  </div>
+                </div>
+              )} */}
+            </div>
+          </form>
+
+          {/* Reusable Form Generator using transitOrder module */}
+          <div className="">
+            <ReusableFormGenerator
+              moduleName="documents"
+              formData={transitOrderData}
+              setFormData={setTransitOrderData}
+              onFieldChange={(fieldName, value) => {
+                console.log(
+                  `Transit Order field ${fieldName} changed to:`,
+                  value
+                );
+              }}
+              onNextField={(currentField) => {
+                console.log(`Moving from field: ${currentField}`);
+                return null; // or return next field name
+              }}
+              className=""
+            />
+          </div>
+
+          <div className="">
+            <ReusableFormGenerator
+              moduleName="goods"
+              formData={transitOrderData}
+              setFormData={setTransitOrderData}
+              onFieldChange={(fieldName, value) => {
+                console.log(
+                  `Transit Order field ${fieldName} changed to:`,
+                  value
+                );
+              }}
+              onNextField={(currentField) => {
+                console.log(`Moving from field: ${currentField}`);
+                return null; // or return next field name
+              }}
+              className=""
+            />
+          </div>
+
+          <div className="">
+            <ReusableFormGenerator
+              moduleName="transportMaster"
+              formData={transitOrderData}
+              setFormData={setTransitOrderData}
+              onFieldChange={(fieldName, value) => {
+                console.log(
+                  `Transit Order field ${fieldName} changed to:`,
+                  value
+                );
+              }}
+              onNextField={(currentField) => {
+                console.log(`Moving from field: ${currentField}`);
+                return null; // or return next field name
+              }}
+              className=""
+            />
+          </div>
+
+          <div className="">
+            <ReusableFormGenerator
+              moduleName="consigneeMaster"
+              formData={transitOrderData}
+              setFormData={setTransitOrderData}
+              onFieldChange={(fieldName, value) => {
+                console.log(
+                  `Transit Order field ${fieldName} changed to:`,
+                  value
+                );
+              }}
+              onNextField={(currentField) => {
+                console.log(`Moving from field: ${currentField}`);
+                return null; // or return next field name
+              }}
+              className=""
+            />
+          </div>
+          
+          <div className="">
+            <ReusableFormGenerator
+              moduleName="logisticWareHouse"
+              formData={transitOrderData}
+              setFormData={setTransitOrderData}
+              onFieldChange={(fieldName, value) => {
+                console.log(
+                  `Transit Order field ${fieldName} changed to:`,
+                  value
+                );
+              }}
+              onNextField={(currentField) => {
+                console.log(`Moving from field: ${currentField}`);
+                return null; // or return next field name
+              }}
+              className=""
+            />
+          </div>
+        </div>
+      </PageLayout>
+
+      <ResetFormModal
+        opened={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onConfirm={handleReset}
+        title="Reset Form"
+        message="Are you sure you want to reset the form? All changes will be lost."
+        confirmText="Reset"
+        cancelText="Cancel"
+      />
+
+      {/* Options Modal */}
+      <Modal
+        opened={isOptionModalOpen}
+        onClose={() => setIsOptionModalOpen(false)}
+        title="Options"
+        size="xl"
+        overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+      >
+        <div className="pt-5 pb-14 px-5">Modal Content</div>
+      </Modal>
+    </>
+  );
+}

@@ -1,0 +1,775 @@
+import { Card, CardTitle } from "@/components/ui/card";
+import { toastDelete, toastRestore } from "@/lib/toast";
+import { Tooltip } from "@mantine/core"; // Import Tooltip from Mantine
+import { RefreshCw, Trash2 } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import GridExportComponent from "./GridExportComponent";
+import GridFilterComponent from "./GridFilterComponent";
+import { usePermission } from "@/hooks/usePermissions";
+
+type GridDataType = {
+  name: string;
+  partsType: string;
+  brand: string;
+  model: string;
+  serialNumber: string;
+  linkedVehicle: string;
+  currentAssignee: string;
+  partGroup: string;
+  status: string;
+  purchaseVendor: string;
+  purchaseDate: string;
+  warrantyDate: string;
+  comments: string;
+  serviceDate: string;
+  serviceMonths: string;
+  resaleValue: string;
+  outOfDate: string;
+
+  id: string;
+  isDefault: boolean;
+  isActive: boolean;
+  isDraft: boolean;
+  createdAt: Date;
+  draftedAt: Date | null;
+  updatedAt: Date;
+  deletedAt: Date | null;
+  isDeleted: boolean;
+};
+
+const partsData: GridDataType[] = [
+  {
+    id: "1",
+    name: "Engine Oil Filter",
+    partsType: "Filter",
+    brand: "Bosch",
+    model: "OF-2201",
+    serialNumber: "SN-1001",
+    linkedVehicle: "Toyota Corolla 2018",
+    currentAssignee: "Workshop A",
+    partGroup: "Engine",
+    status: "Active",
+    purchaseVendor: "AutoMart",
+    purchaseDate: "2024-01-15",
+    warrantyDate: "2025-01-15",
+    comments: "Regular replacement",
+    serviceDate: "2024-08-01",
+    serviceMonths: "12",
+    resaleValue: "15",
+    outOfDate: "2025-02-01",
+    isDefault: false,
+    isActive: true,
+    isDraft: false,
+    createdAt: new Date("2024-01-15"),
+    draftedAt: null,
+    updatedAt: new Date("2024-08-01"),
+    deletedAt: null,
+    isDeleted: false,
+  },
+  {
+    id: "2",
+    name: "Brake Pad Set",
+    partsType: "Brake",
+    brand: "Brembo",
+    model: "BP-3402",
+    serialNumber: "SN-1002",
+    linkedVehicle: "Honda Civic 2019",
+    currentAssignee: "Workshop B",
+    partGroup: "Braking",
+    status: "Active",
+    purchaseVendor: "PartsPro",
+    purchaseDate: "2024-02-20",
+    warrantyDate: "2026-02-20",
+    comments: "High performance",
+    serviceDate: "2024-08-10",
+    serviceMonths: "24",
+    resaleValue: "40",
+    outOfDate: "2026-03-01",
+    isDefault: false,
+    isActive: true,
+    isDraft: false,
+    createdAt: new Date("2024-02-20"),
+    draftedAt: null,
+    updatedAt: new Date("2024-08-10"),
+    deletedAt: null,
+    isDeleted: false,
+  },
+  {
+    id: "3",
+    name: "Air Filter",
+    partsType: "Filter",
+    brand: "K&N",
+    model: "AF-510",
+    serialNumber: "SN-1003",
+    linkedVehicle: "Hyundai Elantra 2020",
+    currentAssignee: "Workshop C",
+    partGroup: "Engine",
+    status: "Active",
+    purchaseVendor: "AutoHub",
+    purchaseDate: "2024-03-10",
+    warrantyDate: "2025-03-10",
+    comments: "Reusable filter",
+    serviceDate: "2024-07-15",
+    serviceMonths: "12",
+    resaleValue: "25",
+    outOfDate: "2025-04-01",
+    isDefault: false,
+    isActive: true,
+    isDraft: false,
+    createdAt: new Date("2024-03-10"),
+    draftedAt: null,
+    updatedAt: new Date("2024-07-15"),
+    deletedAt: null,
+    isDeleted: false,
+  },
+  {
+    id: "4",
+    name: "Car Battery",
+    partsType: "Battery",
+    brand: "Exide",
+    model: "EX-60",
+    serialNumber: "SN-1004",
+    linkedVehicle: "Nissan Altima 2017",
+    currentAssignee: "Workshop D",
+    partGroup: "Electrical",
+    status: "Active",
+    purchaseVendor: "BatteryHouse",
+    purchaseDate: "2024-04-05",
+    warrantyDate: "2026-04-05",
+    comments: "Maintenance-free",
+    serviceDate: "2024-08-05",
+    serviceMonths: "24",
+    resaleValue: "60",
+    outOfDate: "2026-05-01",
+    isDefault: false,
+    isActive: true,
+    isDraft: false,
+    createdAt: new Date("2024-04-05"),
+    draftedAt: null,
+    updatedAt: new Date("2024-08-05"),
+    deletedAt: null,
+    isDeleted: false,
+  },
+  {
+    id: "5",
+    name: "Fuel Pump",
+    partsType: "Pump",
+    brand: "Delphi",
+    model: "FP-88",
+    serialNumber: "SN-1005",
+    linkedVehicle: "Ford Focus 2016",
+    currentAssignee: "Workshop E",
+    partGroup: "Fuel",
+    status: "Inactive",
+    purchaseVendor: "PartsWorld",
+    purchaseDate: "2024-05-12",
+    warrantyDate: "2025-05-12",
+    comments: "Check regularly",
+    serviceDate: "2024-07-20",
+    serviceMonths: "18",
+    resaleValue: "75",
+    outOfDate: "2025-06-01",
+    isDefault: false,
+    isActive: false,
+    isDraft: false,
+    createdAt: new Date("2024-05-12"),
+    draftedAt: null,
+    updatedAt: new Date("2024-07-20"),
+    deletedAt: null,
+    isDeleted: false,
+  },
+  {
+    id: "6",
+    name: "Spark Plug",
+    partsType: "Ignition",
+    brand: "NGK",
+    model: "SP-20",
+    serialNumber: "SN-1006",
+    linkedVehicle: "Kia Optima 2019",
+    currentAssignee: "Workshop F",
+    partGroup: "Engine",
+    status: "Active",
+    purchaseVendor: "AutoZone",
+    purchaseDate: "2024-06-18",
+    warrantyDate: "2025-06-18",
+    comments: "Change every 20k miles",
+    serviceDate: "2024-08-01",
+    serviceMonths: "12",
+    resaleValue: "10",
+    outOfDate: "2025-07-01",
+    isDefault: false,
+    isActive: true,
+    isDraft: false,
+    createdAt: new Date("2024-06-18"),
+    draftedAt: null,
+    updatedAt: new Date("2024-08-01"),
+    deletedAt: null,
+    isDeleted: false,
+  },
+  {
+    id: "7",
+    name: "Alternator",
+    partsType: "Electrical",
+    brand: "Denso",
+    model: "ALT-45",
+    serialNumber: "SN-1007",
+    linkedVehicle: "Mazda 6 2015",
+    currentAssignee: "Workshop G",
+    partGroup: "Electrical",
+    status: "Active",
+    purchaseVendor: "PartsExpress",
+    purchaseDate: "2024-07-22",
+    warrantyDate: "2026-07-22",
+    comments: "OEM part",
+    serviceDate: "2024-08-15",
+    serviceMonths: "24",
+    resaleValue: "120",
+    outOfDate: "2026-08-01",
+    isDefault: false,
+    isActive: true,
+    isDraft: false,
+    createdAt: new Date("2024-07-22"),
+    draftedAt: null,
+    updatedAt: new Date("2024-08-15"),
+    deletedAt: null,
+    isDeleted: false,
+  },
+  {
+    id: "8",
+    name: "Radiator",
+    partsType: "Cooling",
+    brand: "Valeo",
+    model: "RAD-90",
+    serialNumber: "SN-1008",
+    linkedVehicle: "Chevrolet Malibu 2018",
+    currentAssignee: "Workshop H",
+    partGroup: "Cooling",
+    status: "Inactive",
+    purchaseVendor: "CoolParts",
+    purchaseDate: "2024-08-05",
+    warrantyDate: "2025-08-05",
+    comments: "Replaced due to leakage",
+    serviceDate: "2024-08-10",
+    serviceMonths: "12",
+    resaleValue: "200",
+    outOfDate: "2025-09-01",
+    isDefault: false,
+    isActive: false,
+    isDraft: false,
+    createdAt: new Date("2024-08-05"),
+    draftedAt: null,
+    updatedAt: new Date("2024-08-10"),
+    deletedAt: null,
+    isDeleted: false,
+  },
+  {
+    id: "9",
+    name: "Shock Absorber",
+    partsType: "Suspension",
+    brand: "Monroe",
+    model: "SH-55",
+    serialNumber: "SN-1009",
+    linkedVehicle: "Subaru Impreza 2020",
+    currentAssignee: "Workshop I",
+    partGroup: "Suspension",
+    status: "Active",
+    purchaseVendor: "SuspensionWorld",
+    purchaseDate: "2024-09-12",
+    warrantyDate: "2026-09-12",
+    comments: "For smooth ride",
+    serviceDate: "2024-09-20",
+    serviceMonths: "24",
+    resaleValue: "150",
+    outOfDate: "2026-10-01",
+    isDefault: false,
+    isActive: true,
+    isDraft: false,
+    createdAt: new Date("2024-09-12"),
+    draftedAt: null,
+    updatedAt: new Date("2024-09-20"),
+    deletedAt: null,
+    isDeleted: false,
+  },
+  {
+    id: "10",
+    name: "Clutch Plate",
+    partsType: "Transmission",
+    brand: "Sachs",
+    model: "CP-33",
+    serialNumber: "SN-1010",
+    linkedVehicle: "Volkswagen Jetta 2016",
+    currentAssignee: "Workshop J",
+    partGroup: "Transmission",
+    status: "Active",
+    purchaseVendor: "TransParts",
+    purchaseDate: "2024-10-08",
+    warrantyDate: "2025-10-08",
+    comments: "OEM replacement",
+    serviceDate: "2024-10-15",
+    serviceMonths: "18",
+    resaleValue: "180",
+    outOfDate: "2025-11-01",
+    isDefault: false,
+    isActive: true,
+    isDraft: false,
+    createdAt: new Date("2024-10-08"),
+    draftedAt: null,
+    updatedAt: new Date("2024-10-15"),
+    deletedAt: null,
+    isDeleted: false,
+  },
+  {
+    id: "11",
+    name: "Headlight Assembly",
+    partsType: "Lighting",
+    brand: "Philips",
+    model: "HL-22",
+    serialNumber: "SN-1011",
+    linkedVehicle: "BMW 3 Series 2019",
+    currentAssignee: "Workshop K",
+    partGroup: "Lighting",
+    status: "Active",
+    purchaseVendor: "LightWorld",
+    purchaseDate: "2024-11-01",
+    warrantyDate: "2026-11-01",
+    comments: "LED upgrade",
+    serviceDate: "2024-11-10",
+    serviceMonths: "24",
+    resaleValue: "300",
+    outOfDate: "2026-12-01",
+    isDefault: false,
+    isActive: true,
+    isDraft: false,
+    createdAt: new Date("2024-11-01"),
+    draftedAt: null,
+    updatedAt: new Date("2024-11-10"),
+    deletedAt: null,
+    isDeleted: false,
+  },
+  {
+    id: "12",
+    name: "Windshield Wiper",
+    partsType: "Accessory",
+    brand: "Bosch",
+    model: "WW-12",
+    serialNumber: "SN-1012",
+    linkedVehicle: "Toyota Camry 2021",
+    currentAssignee: "Workshop L",
+    partGroup: "Accessory",
+    status: "Active",
+    purchaseVendor: "AutoMart",
+    purchaseDate: "2024-12-05",
+    warrantyDate: "2025-12-05",
+    comments: "All-weather blades",
+    serviceDate: "2024-12-15",
+    serviceMonths: "12",
+    resaleValue: "20",
+    outOfDate: "2026-01-01",
+    isDefault: false,
+    isActive: true,
+    isDraft: false,
+    createdAt: new Date("2024-12-05"),
+    draftedAt: null,
+    updatedAt: new Date("2024-12-15"),
+    deletedAt: null,
+    isDeleted: false,
+  },
+];
+
+type Props = {
+  searchQuery: string;
+  setIsFilterOpen: (isFilterOpen: boolean) => void;
+  isFilterOpen: boolean;
+  setIsExportOpen: (isExportOpen: boolean) => void;
+  isExportOpen: boolean;
+};
+
+export default function ComponentLevelGridView({
+  searchQuery,
+  setIsFilterOpen,
+  isFilterOpen,
+  setIsExportOpen,
+  isExportOpen,
+}: Props) {
+  console.log("grid rendered");
+
+  const navigate = useNavigate();
+
+  const [gridData, setGridData] = useState(partsData);
+  const canDelete: boolean = usePermission("parts", "delete");
+  const canRestore: boolean = usePermission("parts", "restore");
+  const canEdit: boolean = usePermission("parts", "edit");
+
+  // Debug permissions
+  console.log("parts Permissions:", {
+    canDelete,
+    canRestore,
+    canEdit,
+  });
+
+  // Infinite scroll states
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [, setPage] = useState(1);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const ITEMS_PER_PAGE = 4;
+
+  // Simulate API call to load more data
+  const loadMoreData = useCallback(async () => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    const newItems = Array.from({ length: ITEMS_PER_PAGE }, (_, index) => ({
+      id: `${Date.now()}-${index}`,
+
+      name: `Vehicle ${index + 1}`,
+      partsType: `2025-08-16`,
+      brand: `45210`,
+      model: `12.5`,
+      serialNumber: `48.75`,
+      linkedVehicle: `Vehicle ${index + 1}`,
+      currentAssignee: `Workshop A`,
+      partGroup: `REF-1001`,
+      status: `Full tank refill`,
+      purchaseVendor: `AutoMart`,
+      purchaseDate: `2025-08-16`,
+      warrantyDate: `45210`,
+      comments: `12.5`,
+      serviceDate: `48.75`,
+      serviceMonths: `12`,
+      resaleValue: `15`,
+      outOfDate: `REF-1001`,
+
+      isDefault: false,
+      isActive: Math.random() > 0.3,
+      isDraft: Math.random() > 0.7,
+      createdAt: new Date(),
+      draftedAt: null,
+      updatedAt: new Date(),
+      deletedAt: null,
+      isDeleted: false,
+    }));
+
+    // Stop loading more after reaching 50 items for demo
+    if (gridData.length >= 46) {
+      setHasMore(false);
+    } else {
+      setGridData((prev) => [...prev, ...newItems] as GridDataType[]);
+      setPage((prev) => prev + 1);
+    }
+
+    setIsLoading(false);
+  }, [gridData.length, isLoading, hasMore]);
+
+  // Infinite scroll handler
+  const handleScroll = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    const threshold = 100; // Load more when 100px from bottom
+
+    if (scrollHeight - scrollTop <= clientHeight + threshold) {
+      loadMoreData();
+    }
+  }, [loadMoreData]);
+
+  // Add scroll event listener
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  const handleDeleteClick = (id: string) => {
+    setGridData((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              isDeleted: item.isDeleted === true ? false : true,
+            }
+          : item
+      )
+    );
+  };
+
+  const handleRestoreClick = (id: string) => {
+    setGridData((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              isDeleted: item.isDeleted === true ? false : true,
+            }
+          : item
+      )
+    );
+  };
+
+  // Filter leaves based on search query
+  const filteredData = gridData.filter(
+    (item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.linkedVehicle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.partGroup.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.status.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.purchaseVendor.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.purchaseDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.warrantyDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.comments.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.serviceDate.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.serviceMonths.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.resaleValue.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.outOfDate.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div
+      className={cn(
+        "px-4 py-3 h-full flex flex-col bg-white dark:bg-gray-900 parent relative rounded-lg"
+      )}
+    >
+      {/* Floating Label - Left Top */}
+      <div
+        className={cn(
+          "absolute -top-4 left-6 rtl:left-auto rtl:right-6 py-1 rounded-md z-40! bg-white w-fit"
+        )}
+      >
+        <span
+          className={cn(
+            "text-md font-semibold tracking-wide capitalize text-gray-600"
+          )}
+        >
+          Total {gridData.length} Parts
+        </span>
+      </div>
+
+      {/* Main content area */}
+      <div className="flex flex-1 overflow-hidden mt-2">
+        {/* Cards container */}
+        <div
+          ref={scrollContainerRef}
+          className="overflow-y-auto scroll-smooth smooth-scroll pr-4"
+          style={{
+            width: isFilterOpen || isExportOpen ? "calc(100% - 320px)" : "100%",
+          }}
+        >
+          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 pb-4 p-2">
+            {filteredData.map((item, index) => (
+              <Card
+                key={index}
+                className="transition-all hover:border-primary/90 hover:shadow-lg hover:translate-y-[-5px] relative group dark:bg-gray-800 p-4 duration-200"
+              >
+                {/* Top Row - Grid with 2 columns: Title | Status */}
+                <div className="grid grid-cols-2 items-center gap-2 mb-4">
+                  {/* Left - Title */}
+                  <CardTitle
+                    className="text-lg font-semibold cursor-pointer hover:text-primary transition-colors truncate"
+                    onClick={() => navigate(`/parts/1`)}
+                  >
+                    {item.name}
+                  </CardTitle>
+
+                  {/* Right - Status */}
+                  <div className="flex items-end flex-col">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Status
+                    </div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                      {item.status}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Row - Grid with 3 columns: Leave Type | Actions | Notes */}
+                <div className="grid grid-cols-2 items-center gap-4 pt-2 dark:border-gray-700">
+                  {/* Leave Type - Left aligned */}
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Serial Number
+                    </div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                      {item.serialNumber}
+                    </div>
+                  </div>
+
+                  {/* Middle - Action Icons */}
+                  <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {/* Delete/Restore */}
+                    <Tooltip
+                      label={
+                        item.isDeleted && canRestore
+                          ? "Restore"
+                          : canDelete
+                          ? "Delete"
+                          : ""
+                      }
+                      position="top"
+                      arrowSize={8}
+                      withArrow
+                      styles={{
+                        tooltip: {
+                          fontSize: "14px",
+                          padding: "8px 12px",
+                          backgroundColor: "#374151",
+                          color: "white",
+                          borderRadius: "6px",
+                          fontWeight: "500",
+                          boxShadow:
+                            "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                        },
+                        arrow: {
+                          backgroundColor: "#374151",
+                        },
+                      }}
+                    >
+                      <button
+                        disabled={item.isDeleted && !canRestore}
+                        className={`cursor-pointer p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                          item.isDeleted ? "text-blue-500" : "text-red-500"
+                        }`}
+                        onClick={() => {
+                          if (canRestore && item.isDeleted) {
+                            handleRestoreClick(item.id);
+                            toastRestore("Parts restored successfully");
+                          } else {
+                            if (canDelete) {
+                              handleDeleteClick(item.id);
+                              toastDelete("Parts deleted successfully");
+                            }
+                          }
+                        }}
+                      >
+                        {item.isDeleted && canRestore ? (
+                          <RefreshCw className="h-4 w-4" />
+                        ) : (
+                          canDelete && <Trash2 className="h-4 w-4" />
+                        )}
+                      </button>
+                    </Tooltip>
+
+                    {/* Edit */}
+                    {canEdit && (
+                      <Tooltip
+                        label="Edit"
+                        position="top"
+                        arrowSize={8}
+                        withArrow
+                        styles={{
+                          tooltip: {
+                            fontSize: "14px",
+                            padding: "8px 12px",
+                            backgroundColor: "#374151",
+                            color: "white",
+                            borderRadius: "6px",
+                            fontWeight: "500",
+                            boxShadow:
+                              "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                          },
+                          arrow: {
+                            backgroundColor: "#374151",
+                          },
+                        }}
+                      >
+                        <div
+                          className="cursor-pointer p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-blue-500 flex items-center justify-center w-8 h-8"
+                          onClick={() => navigate(`/parts/edit/1`)}
+                        >
+                          <FontAwesomeIcon icon={faEdit} className="h-4 w-4" />
+                        </div>
+                      </Tooltip>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 items-center gap-4 pt-2 dark:border-gray-700 border-t">
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Parts Type
+                    </div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                      {item.partsType}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Brand
+                    </div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                      {item.brand}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Model
+                    </div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                      {item.model}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="flex justify-center items-center py-8">
+              <div className="flex items-center gap-2 text-blue-600">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                <span className="text-sm">Loading more parts...</span>
+              </div>
+            </div>
+          )}
+
+          {/* End of data indicator */}
+          {!hasMore && gridData.length > 12 && (
+            <div className="flex justify-center items-center py-8">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                No more parts to load
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Filter component - Right side only */}
+        {isFilterOpen && (
+          <div className="w-80 flex-shrink-0 border-l border-gray-200 dark:border-gray-700 pl-4">
+            <div className="h-full flex flex-col">
+              <GridFilterComponent
+                data={gridData}
+                setFilteredData={setGridData}
+                setShowFilter={setIsFilterOpen}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Export component - Right side only */}
+        {isExportOpen && (
+          <div className="w-80 flex-shrink-0 border-l border-gray-200 dark:border-gray-700 pl-4">
+            <div className="h-full flex flex-col">
+              <GridExportComponent
+                data={gridData}
+                setFilteredData={setGridData}
+                setIsExportOpen={setIsExportOpen}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

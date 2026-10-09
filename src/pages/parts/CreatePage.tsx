@@ -1,0 +1,1003 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import video from "@/assets/videos/test.mp4";
+import { Autocomplete } from "@/components/common/Autocomplete";
+import EditableInput from "@/components/common/EditableInput";
+import PageLayout from "@/components/common/PageLayout";
+import GenericPDF from "@/components/common/pdf";
+import { ResetFormModal } from "@/components/common/ResetFormModal";
+import { Button } from "@/components/ui/button";
+import { PrintCommonLayout } from "@/lib/printContents/PrintCommonLayout";
+import { printHtmlContent } from "@/lib/printHtmlContent";
+import { toastError, toastRestore, toastSuccess } from "@/lib/toast";
+import { Modal } from "@mantine/core";
+import { pdf } from "@react-pdf/renderer";
+import { Check, Edit, Eye, Plus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { usePermission } from "@/hooks/usePermissions";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store";
+
+type ProjectTypeDataType = {
+  name: string;
+  partsType: string;
+  brand: string;
+  model: string;
+  serialNumber: string;
+  linkedVehicle: string;
+  currentAssignee: string;
+  partGroup: string;
+  status: string;
+  purchaseVendor: string;
+  purchaseDate: string;
+  warrantyDate: string;
+  comments: string;
+  serviceDate: string;
+  serviceMonths: string;
+  resaleValue: string;
+  outOfDate: string;
+
+  isDefault: boolean;
+  isDraft: boolean;
+
+  createdAt: Date | null;
+  draftedAt: Date | null;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
+};
+
+type Props = {
+  isEdit?: boolean;
+};
+
+const initialData: ProjectTypeDataType = {
+  name: "Engine Oil Filter",
+  partsType: "Filter",
+  brand: "Bosch",
+  model: "OF-2201",
+  serialNumber: "SN-1001",
+  linkedVehicle: "Toyota Corolla 2018",
+  currentAssignee: "Workshop A",
+  partGroup: "Engine",
+  status: "Active",
+  purchaseVendor: "AutoMart",
+  purchaseDate: "2024-01-15",
+  warrantyDate: "2025-01-15",
+  comments: "Regular replacement",
+  serviceDate: "2024-08-01",
+  serviceMonths: "12",
+  resaleValue: "15",
+  outOfDate: "2025-02-01",
+
+  isDefault: false,
+  isDraft: false,
+  createdAt: new Date(),
+  draftedAt: null,
+  updatedAt: new Date(),
+  deletedAt: null,
+};
+
+export default function PartsCreatePage({ isEdit = false }: Props) {
+  const navigate = useNavigate();
+  const { isRTL } = useSelector((state: RootState) => state.language);
+
+  const [keepCreating, setKeepCreating] = useState(false);
+  const [isOptionModalOpen, setIsOptionModalOpen] = useState(false);
+  const [isDefaultState, setIsDefaultState] = useState<"Yes" | "No">("No");
+  const [isDraftState, setIsDraftState] = useState<"Yes" | "No">("No");
+
+  const [printEnabled, setPrintEnabled] = useState(false);
+  const [pdfChecked, setPdfChecked] = useState(false);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+
+  // Permission checks
+  const canCreate = usePermission("parts", "create");
+  const canView = usePermission("parts", "view");
+  const canEdit = usePermission("parts", "edit");
+  const canDelete = usePermission("parts", "delete");
+
+  console.log("canCreate", canCreate);
+  console.log("canView", canView);
+  console.log("canEdit", canEdit);
+  console.log("canDelete", canDelete);
+
+  // Field-level permissions
+
+  const name: boolean = usePermission("parts", "create", "name");
+  const partsType: boolean = usePermission("parts", "create", "partsType");
+  const brand: boolean = usePermission("parts", "create", "brand");
+  const model: boolean = usePermission("parts", "create", "model");
+  const serialNumber: boolean = usePermission(
+    "parts",
+    "create",
+    "serialNumber"
+  );
+  const linkedVehicle: boolean = usePermission(
+    "parts",
+    "create",
+    "linkedVehicle"
+  );
+  const currentAssignee: boolean = usePermission(
+    "parts",
+    "create",
+    "currentAssignee"
+  );
+  const partGroup: boolean = usePermission("parts", "create", "partGroup");
+
+  const purchaseVendor: boolean = usePermission(
+    "parts",
+    "create",
+    "purchaseVendor"
+  );
+  const purchaseDate: boolean = usePermission(
+    "parts",
+    "create",
+    "purchaseDate"
+  );
+  const warrantyDate: boolean = usePermission(
+    "parts",
+    "create",
+    "warrantyDate"
+  );
+  const comments: boolean = usePermission("parts", "create", "comments");
+  const serviceDate: boolean = usePermission("parts", "create", "serviceDate");
+  const serviceMonths: boolean = usePermission(
+    "parts",
+    "create",
+    "serviceMonths"
+  );
+  const resaleValue: boolean = usePermission("parts", "create", "resaleValue");
+  const outOfDate: boolean = usePermission("parts", "create", "outOfDate");
+
+  const isDefault: boolean = usePermission("parts", "create", "isDefault");
+
+  const isDraft: boolean = usePermission("parts", "create", "isDraft");
+  const canPdf: boolean = usePermission("parts", "pdf");
+  const canPrint: boolean = usePermission("parts", "print");
+
+  console.log("isDefault", isDefault);
+  console.log("isDraft", isDraft);
+  console.log("canPdf", canPdf);
+  console.log("canPrint", canPrint);
+
+  // Form state
+  const [formData, setFormData] = useState<ProjectTypeDataType>({
+    name: "",
+    partsType: "",
+    brand: "",
+    model: "",
+    serialNumber: "",
+    linkedVehicle: "",
+    currentAssignee: "",
+    partGroup: "",
+    status: "",
+    purchaseVendor: "",
+    purchaseDate: "",
+    warrantyDate: "",
+    comments: "",
+    serviceDate: "",
+    serviceMonths: "",
+    resaleValue: "",
+    outOfDate: "",
+
+    isDefault: isDefaultState === "Yes",
+    isDraft: false,
+    createdAt: null,
+    draftedAt: null,
+    updatedAt: null,
+    deletedAt: null,
+  });
+
+  const [popoverOptions, setPopoverOptions] = useState([
+    {
+      label: isEdit ? "Create" : "Edit",
+      icon: isEdit ? (
+        <Plus className="w-5 h-5 text-green-500" /> // Green for Plus
+      ) : (
+        <Edit className="w-5 h-5 text-blue-500" /> // Blue for Edit
+      ),
+      onClick: () => {
+        if (isEdit) {
+          navigate("/fuels/create");
+        } else {
+          navigate("/fuels/edit/undefined");
+        }
+      },
+      // Only show if user has permission
+      show: canCreate,
+    },
+    {
+      label: "View",
+      icon: <Eye className="w-5 h-5 text-green-600" />, // Added neutral color for Eye
+      onClick: () => {
+        navigate("/fuels/view");
+      },
+      // Only show if user has permission
+      show: canView,
+    },
+  ]);
+
+  // focus next input field
+  const inputRefs = useRef<Record<string, HTMLElement | null>>({});
+  const setRef = (name: string) => (el: HTMLElement | null) => {
+    inputRefs.current[name] = el;
+  };
+  const focusNextInput = (nextField: string) => {
+    inputRefs.current[nextField]?.focus();
+  };
+
+  // Initialize with edit data if available
+  useEffect(() => {
+    if (isEdit && initialData) {
+      setFormData({
+        ...initialData,
+      });
+      setIsDraftState(initialData.isDraft ? "Yes" : "No");
+    }
+  }, [isEdit, initialData]);
+
+  // Handle form field changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form submitted:", formData);
+    // Normal submit logic here (API call)------------
+
+    if (pdfChecked) {
+      await handleExportPDF();
+    }
+    if (printEnabled) {
+      handlePrintLeaves(formData);
+    }
+
+    // keep switch functionality
+    if (keepCreating) {
+      toastSuccess("Parts created successfully!");
+      handleReset();
+    } else {
+      toastSuccess("Parts created successfully!");
+      navigate("/parts");
+    }
+  };
+
+  const handleResetClick = () => {
+    setIsResetModalOpen(true);
+  };
+
+  // Add this state
+  const [formKey, setFormKey] = useState(0);
+
+  // Update handleReset function
+  const handleReset = () => {
+    setFormData({
+      name: "",
+      partsType: "",
+      brand: "",
+      model: "",
+      serialNumber: "",
+      linkedVehicle: "",
+      currentAssignee: "",
+      partGroup: "",
+      status: "",
+      purchaseVendor: "",
+      purchaseDate: "",
+      warrantyDate: "",
+      comments: "",
+      serviceDate: "",
+      serviceMonths: "",
+      resaleValue: "",
+      outOfDate: "",
+
+      isDefault: false,
+      isDraft: false,
+      createdAt: new Date(),
+      draftedAt: null,
+      updatedAt: new Date(),
+      deletedAt: null,
+    });
+    setIsDefaultState("No");
+
+    if (formRef.current) {
+      formRef.current.reset();
+    }
+
+    // Force re-render of all inputs by changing key
+    setFormKey((prev) => prev + 1);
+
+    // Focus the first input field after reset
+    setTimeout(() => {
+      inputRefs.current["name"]?.focus();
+    }, 100); // Slightly longer delay to ensure re-render is complete
+  };
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handlePrintLeaves = (leavesData: any) => {
+    try {
+      const html = PrintCommonLayout({
+        title: "Parts Details",
+        data: [leavesData],
+        excludeFields: ["id", "__v", "_id"],
+        fieldLabels: {
+          name: "Name",
+          partsType: "Parts Type",
+          brand: "Brand",
+          model: "Model",
+          serialNumber: "Serial Number",
+          linkedVehicle: "Linked Vehicle",
+          currentAssignee: "Current Assignee",
+          partGroup: "Part Group",
+          status: "Status",
+          purchaseVendor: "Purchase Vendor",
+          purchaseDate: "Purchase Date",
+          warrantyDate: "Warranty Date",
+          comments: "Comments",
+          serviceDate: "Service Date",
+          serviceMonths: "Service Months",
+          resaleValue: "Resale Value",
+          outOfDate: "Out of Date",
+          isDefault: "Default Leave",
+          isDraft: "Draft Status",
+          isDeleted: "Deleted Status",
+          createdAt: "Created At",
+          updatedAt: "Updated At",
+          draftedAt: "Drafted At",
+          deletedAt: "Deleted At",
+        },
+      });
+      printHtmlContent(html);
+    } catch (error) {
+      console.log(error);
+      toastError("Something went wrong when printing");
+    }
+  };
+
+  const handleSwitchChange = (checked: boolean) => {
+    setPrintEnabled(checked);
+  };
+
+  const handlePDFSwitchChange = (pdfChecked: boolean) => {
+    setPdfChecked(pdfChecked);
+  };
+
+  const handleExportPDF = async () => {
+    console.log("Export PDF clicked");
+    try {
+      console.log("sampleReceivingData on pdf click", formData);
+      const blob = await pdf(
+        <GenericPDF
+          data={[formData]}
+          title="Parts Details"
+          subtitle="Parts Information"
+        />
+      ).toBlob();
+
+      console.log("blob", blob);
+
+      const url = URL.createObjectURL(blob);
+      console.log("url", url);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "parts-details.pdf";
+      a.click();
+      console.log("a", a);
+      console.log("url", url);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.log(error);
+      toastError("Something went wrong when generating PDF");
+    }
+  };
+
+  useEffect(() => {
+    setPopoverOptions((prevOptions) => {
+      // Filter out any existing draft option first
+      const filteredOptions = prevOptions.filter(
+        (opt) => opt.label !== "Draft"
+      );
+
+      // Add draft option only if not already a draft
+      if (!formData.isDraft) {
+        return [
+          ...filteredOptions,
+          {
+            label: "Draft",
+            icon: <Check className="text-green-500" />,
+            onClick: () => {
+              setFormData((prev) => ({
+                ...prev,
+                isDraft: true,
+              }));
+              toastRestore("Parts saved as draft successfully");
+            },
+            show: canCreate, // Only show draft option if user can create
+          },
+        ];
+      }
+      return filteredOptions;
+    });
+  }, [formData.isDraft, canCreate]);
+
+  return (
+    <>
+      <PageLayout
+        title={isEdit ? "Editing Parts" : "Creating Parts"}
+        videoSrc={video}
+        videoHeader="Tutorial video"
+        listPath="parts"
+        popoverOptions={popoverOptions}
+        keepChanges={keepCreating}
+        onKeepChangesChange={setKeepCreating}
+        pdfChecked={pdfChecked}
+        onPdfToggle={canPdf ? handlePDFSwitchChange : undefined}
+        printEnabled={printEnabled}
+        onPrintToggle={canPrint ? handleSwitchChange : undefined}
+        activePage="create"
+        // Removed onExport prop
+        additionalFooterButtons={
+          // Only show buttons if user can create
+          canCreate ? (
+            <div className="flex gap-4 items-center">
+              <Button
+                variant="outline"
+                className="gap-2 text-primary bg-sky-200 hover:bg-primary rounded-full border-primary w-32 font-semibold!"
+                onClick={handleResetClick}
+              >
+                Reset
+              </Button>
+              <Button
+                ref={(el) => setRef("submitButton")(el as HTMLButtonElement)}
+                id="submitButton"
+                name="submitButton"
+                variant="outline"
+                className={`gap-2 text-primary rounded-full border-primary w-32 bg-sky-200 hover:bg-primary font-semibold!`}
+                onClick={() => formRef.current?.requestSubmit()}
+              >
+                Submit
+              </Button>
+            </div>
+          ) : null
+        }
+        className="w-full"
+      >
+        <div dir={isRTL ? "rtl" : "ltr"}>
+          <form
+            ref={formRef}
+            key={formKey}
+            onSubmit={handleSubmit}
+            className="space-y-6 relative"
+          >
+            {/* All fields in one 4-column row */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-8 relative">
+              {/* Leave Types field - only show if user can create */}
+              {name && (
+                <div className="space-y-2">
+                  <EditableInput
+                    setRef={setRef("name")}
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    onNext={() => focusNextInput("partsType")}
+                    onCancel={() => setFormData({ ...formData, name: "" })}
+                    labelText="Name"
+                    tooltipText="Enter name"
+                    required
+                  />
+                </div>
+              )}
+
+              {partsType && (
+                <div className="space-y-2">
+                  <Autocomplete
+                    ref={(el: any) => setRef("partsType")(el)}
+                    id="partsType"
+                    name="partsType"
+                    options={[
+                      "Filter",
+                      "Brake",
+                      "Battery",
+                      "Suspension",
+                      "Transmission",
+                      "Wiper",
+                      "Light",
+                      "Fuel",
+                      "Other",
+                    ]}
+                    value={formData.partsType}
+                    labelClassName="rounded-lg"
+                    isSelectableOnly={true}
+                    onValueChange={(value: string) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        partsType: value,
+                      }));
+                      // Call focusNextInput if needed
+                      focusNextInput("brand");
+                    }}
+                    onEnterPress={() => {
+                      if (formData.partsType) {
+                        focusNextInput("brand");
+                      }
+                    }}
+                    placeholder=" "
+                    labelText="Parts Type"
+                    className="relative"
+                    styles={{
+                      input: {
+                        borderColor: "var(--primary)",
+                        "&:focus": {
+                          borderColor: "var(--primary)",
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              )}
+
+              {brand && (
+                <div className="space-y-2">
+                  <EditableInput
+                    setRef={setRef("brand")}
+                    type="text"
+                    id="brand"
+                    name="brand"
+                    value={formData.brand}
+                    onChange={handleChange}
+                    onNext={() => focusNextInput("model")}
+                    onCancel={() => setFormData({ ...formData, brand: "" })}
+                    labelText="Brand"
+                    tooltipText="Enter brand"
+                    required
+                  />
+                </div>
+              )}
+
+              {model && (
+                <div className="space-y-2">
+                  <EditableInput
+                    setRef={setRef("model")}
+                    type="text"
+                    id="model"
+                    name="model"
+                    value={formData.model}
+                    onChange={handleChange}
+                    onNext={() => focusNextInput("serialNumber")}
+                    onCancel={() => setFormData({ ...formData, model: "" })}
+                    labelText="Model"
+                    tooltipText="Enter model"
+                    required
+                  />
+                </div>
+              )}
+
+              {serialNumber && (
+                <div className="space-y-2">
+                  <EditableInput
+                    setRef={setRef("serialNumber")}
+                    type="text"
+                    id="serialNumber"
+                    name="serialNumber"
+                    value={formData.serialNumber}
+                    onChange={handleChange}
+                    onNext={() => focusNextInput("linkedVehicle")}
+                    onCancel={() =>
+                      setFormData({ ...formData, serialNumber: "" })
+                    }
+                    labelText="Serial Number"
+                    tooltipText="Enter serial number"
+                    required
+                  />
+                </div>
+              )}
+
+              {linkedVehicle && (
+                <div className="space-y-2">
+                  <Autocomplete
+                    ref={(el: any) => setRef("linkedVehicle")(el)}
+                    id="linkedVehicle"
+                    name="linkedVehicle"
+                    options={[
+                      "Toyota Corolla 2018",
+                      "Honda Civic 2019",
+                      "Hyundai Elantra 2020",
+                      "Nissan Altima 2017",
+                    ]}
+                    value={formData.linkedVehicle}
+                    labelClassName="rounded-lg"
+                    isSelectableOnly={true}
+                    onValueChange={(value: string) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        linkedVehicle: value,
+                      }));
+                      // Call focusNextInput if needed
+                      focusNextInput("currentAssignee");
+                    }}
+                    onEnterPress={() => {
+                      if (formData.linkedVehicle) {
+                        focusNextInput("currentAssignee");
+                      }
+                    }}
+                    placeholder=" "
+                    labelText="Linked Vehicle"
+                    className="relative"
+                    styles={{
+                      input: {
+                        borderColor: "var(--primary)",
+                        "&:focus": {
+                          borderColor: "var(--primary)",
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              )}
+
+              {currentAssignee && (
+                <div className="space-y-2">
+                  <Autocomplete
+                    ref={(el: any) => setRef("currentAssignee")(el)}
+                    id="currentAssignee"
+                    name="currentAssignee"
+                    options={[
+                      "Workshop A",
+                      "Workshop B",
+                      "Workshop C",
+                      "Workshop D",
+                    ]}
+                    value={formData.currentAssignee}
+                    labelClassName="rounded-lg"
+                    isSelectableOnly={true}
+                    onValueChange={(value: string) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        currentAssignee: value,
+                      }));
+                      // Call focusNextInput if needed
+                      focusNextInput("partGroup");
+                    }}
+                    onEnterPress={() => {
+                      if (formData.currentAssignee) {
+                        focusNextInput("partGroup");
+                      }
+                    }}
+                    placeholder=" "
+                    labelText="Current Assignee"
+                    className="relative"
+                    styles={{
+                      input: {
+                        borderColor: "var(--primary)",
+                        "&:focus": {
+                          borderColor: "var(--primary)",
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              )}
+
+              {partGroup && (
+                <div className="space-y-2">
+                  <Autocomplete
+                    ref={(el: any) => setRef("partGroup")(el)}
+                    id="partGroup"
+                    name="partGroup"
+                    options={[
+                      "Workshop A",
+                      "Workshop B",
+                      "Workshop C",
+                      "Workshop D",
+                    ]}
+                    value={formData.partGroup}
+                    labelClassName="rounded-lg"
+                    isSelectableOnly={true}
+                    onValueChange={(value: string) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        partGroup: value,
+                      }));
+                      // Call focusNextInput if needed
+                      focusNextInput("purchaseVendor");
+                    }}
+                    onEnterPress={() => {
+                      if (formData.partGroup) {
+                        focusNextInput("purchaseVendor");
+                      }
+                    }}
+                    placeholder=" "
+                    labelText="Part Group"
+                    className="relative"
+                    styles={{
+                      input: {
+                        borderColor: "var(--primary)",
+                        "&:focus": {
+                          borderColor: "var(--primary)",
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              )}
+
+              {purchaseVendor && (
+                <div className="space-y-2">
+                  <EditableInput
+                    setRef={setRef("purchaseVendor")}
+                    type="text"
+                    id="purchaseVendor"
+                    name="purchaseVendor"
+                    value={formData.purchaseVendor}
+                    onChange={handleChange}
+                    onNext={() => focusNextInput("purchaseDate")}
+                    onCancel={() =>
+                      setFormData({ ...formData, purchaseVendor: "" })
+                    }
+                    labelText="Purchase Vendor"
+                    tooltipText="Enter purchase vendor"
+                    required
+                  />
+                </div>
+              )}
+
+              {purchaseDate && (
+                <div className="space-y-2">
+                  <EditableInput
+                    setRef={setRef("purchaseDate")}
+                    type="date"
+                    id="purchaseDate"
+                    name="purchaseDate"
+                    value={formData.purchaseDate}
+                    onChange={handleChange}
+                    onNext={() => focusNextInput("warrantyDate")}
+                    onCancel={() =>
+                      setFormData({ ...formData, purchaseDate: "" })
+                    }
+                    labelText="Purchase Date"
+                    tooltipText="Enter purchase date"
+                    required
+                  />
+                </div>
+              )}
+
+              {warrantyDate && (
+                <div className="space-y-2">
+                  <EditableInput
+                    setRef={setRef("warrantyDate")}
+                    type="date"
+                    id="warrantyDate"
+                    name="warrantyDate"
+                    value={formData.warrantyDate}
+                    onChange={handleChange}
+                    onNext={() => focusNextInput("comments")}
+                    onCancel={() =>
+                      setFormData({ ...formData, warrantyDate: "" })
+                    }
+                    labelText="Warranty Date"
+                    tooltipText="Enter warranty date"
+                    required
+                  />
+                </div>
+              )}
+
+              {comments && (
+                <div className="space-y-2">
+                  <EditableInput
+                    setRef={setRef("comments")}
+                    type="text"
+                    id="comments"
+                    name="comments"
+                    value={formData.comments}
+                    onChange={handleChange}
+                    onNext={() => focusNextInput("serviceDate")}
+                    onCancel={() => setFormData({ ...formData, comments: "" })}
+                    labelText="Comments"
+                    tooltipText="Enter comments"
+                    required
+                  />
+                </div>
+              )}
+
+              {serviceDate && (
+                <div className="space-y-2">
+                  <EditableInput
+                    setRef={setRef("serviceDate")}
+                    type="date"
+                    id="serviceDate"
+                    name="serviceDate"
+                    value={formData.serviceDate}
+                    onChange={handleChange}
+                    onNext={() => focusNextInput("serviceMonths")}
+                    onCancel={() =>
+                      setFormData({ ...formData, serviceDate: "" })
+                    }
+                    labelText="Service Date"
+                    tooltipText="Enter service date"
+                    required
+                  />
+                </div>
+              )}
+
+              {serviceMonths && (
+                <div className="space-y-2">
+                  <EditableInput
+                    setRef={setRef("serviceMonths")}
+                    type="text"
+                    id="serviceMonths"
+                    name="serviceMonths"
+                    value={formData.serviceMonths}
+                    onChange={handleChange}
+                    onNext={() => focusNextInput("resaleValue")}
+                    onCancel={() =>
+                      setFormData({ ...formData, serviceMonths: "" })
+                    }
+                    labelText="Service Months"
+                    tooltipText="Enter service months"
+                    required
+                  />
+                </div>
+              )}
+
+              {resaleValue && (
+                <div className="space-y-2">
+                  <EditableInput
+                    setRef={setRef("resaleValue")}
+                    type="text"
+                    id="resaleValue"
+                    name="resaleValue"
+                    value={formData.resaleValue}
+                    onChange={handleChange}
+                    onNext={() => focusNextInput("outOfDate")}
+                    onCancel={() =>
+                      setFormData({ ...formData, resaleValue: "" })
+                    }
+                    labelText="Resale Value"
+                    tooltipText="Enter resale value"
+                    required
+                  />
+                </div>
+              )}
+
+              {outOfDate && (
+                <div className="space-y-2">
+                  <EditableInput
+                    setRef={setRef("outOfDate")}
+                    type="date"
+                    id="outOfDate"
+                    name="outOfDate"
+                    value={formData.outOfDate}
+                    onChange={handleChange}
+                    onNext={() => focusNextInput("isDefault")}
+                    onCancel={() => setFormData({ ...formData, outOfDate: "" })}
+                    labelText="Out of Date"
+                    tooltipText="Enter out of date"
+                    required
+                  />
+                </div>
+              )}
+
+              {/* Default field - only show if user can create */}
+              {isDefault && (
+                <div className="space-y-2 relative">
+                  <Autocomplete
+                    ref={(el: any) => setRef("isDefault")(el)}
+                    id="isDefault"
+                    name="isDefault"
+                    options={["No", "Yes"]}
+                    value={isDefaultState === "Yes" ? "Yes" : "No"}
+                    labelClassName="rounded-lg"
+                    isSelectableOnly={true}
+                    onValueChange={(value: string) => {
+                      const isYes = value === "Yes";
+                      setIsDefaultState(isYes ? "Yes" : "No");
+                      const newValue = isYes;
+                      setFormData((prev) => ({
+                        ...prev,
+                        isDefault: newValue,
+                      }));
+                      // Call focusNextInput if needed
+                      focusNextInput("isDraft");
+                    }}
+                    onEnterPress={() => {
+                      if (
+                        formData.isDefault === true ||
+                        formData.isDefault === false
+                      ) {
+                        focusNextInput("isDraft");
+                      }
+                    }}
+                    placeholder=" "
+                    labelText="Default"
+                    className="relative"
+                    styles={{
+                      input: {
+                        borderColor: "var(--primary)",
+                        "&:focus": {
+                          borderColor: "var(--primary)",
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Draft field - only show if user can create */}
+              {isDraft && (
+                <div className="space-y-2 relative">
+                  <Autocomplete
+                    ref={(el: any) => setRef("isDraft")(el)}
+                    id="isDraft"
+                    name="isDraft"
+                    options={["No", "Yes"]}
+                    value={isDraftState === "Yes" ? "Yes" : "No"}
+                    labelClassName="rounded-lg"
+                    isSelectableOnly={true}
+                    onValueChange={(value: string) => {
+                      const isYes = value === "Yes";
+                      setIsDraftState(isYes ? "Yes" : "No");
+                      const newValue = isYes;
+                      setFormData((prev) => ({
+                        ...prev,
+                        isDraft: newValue,
+                      }));
+                      focusNextInput("submitButton");
+                    }}
+                    onEnterPress={() => {
+                      if (
+                        formData.isDraft === true ||
+                        formData.isDraft === false
+                      ) {
+                        focusNextInput("submitButton");
+                      }
+                    }}
+                    placeholder=" "
+                    labelText="Draft"
+                    className="relative"
+                    styles={{
+                      input: {
+                        borderColor: "var(--primary)",
+                        "&:focus": {
+                          borderColor: "var(--primary)",
+                        },
+                      },
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          </form>
+        </div>
+      </PageLayout>
+
+      <ResetFormModal
+        opened={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onConfirm={handleReset}
+        title="Reset Form"
+        message="Are you sure you want to reset the form? All changes will be lost."
+        confirmText="Reset"
+        cancelText="Cancel"
+      />
+
+      {/* Options Modal */}
+      <Modal
+        opened={isOptionModalOpen}
+        onClose={() => setIsOptionModalOpen(false)}
+        title="Options"
+        size="xl"
+        overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+      >
+        <div className="pt-5 pb-14 px-5">Modal Content</div>
+      </Modal>
+    </>
+  );
+}
