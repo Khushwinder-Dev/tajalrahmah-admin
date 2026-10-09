@@ -77,7 +77,7 @@ const ForgotPassword = () => {
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="w-full bg-[#2ba0ee] hover:bg-[#1f93df] text-white font-bold py-2.5 sm:py-3 px-6 rounded-full text-xs sm:text-sm tracking-wider uppercase shadow-md shadow-[#2ba0ee]/25 active:scale-[0.99] transition-all"
+              className="w-full bg-[#01a9a0] hover:bg-[#008f87] text-white font-bold py-2.5 sm:py-3 px-6 rounded-full text-xs sm:text-sm tracking-wider uppercase shadow-md shadow-[#01a9a0]/25 active:scale-[0.99] transition-all"
             >
               BACK TO LOGIN
             </button>
@@ -94,7 +94,7 @@ const ForgotPassword = () => {
 
           {/* Email input */}
           <div>
-            <div className="relative flex items-center bg-[#f1f3f7] dark:bg-slate-800/80 rounded-xl px-3.5 py-2.5 transition-all border border-slate-200/50 dark:border-slate-700/50 focus-within:border-[#2ba0ee] focus-within:ring-2 focus-within:ring-[#2ba0ee]/20 focus-within:bg-white dark:focus-within:bg-slate-800">
+            <div className="relative flex items-center bg-[#f1f3f7] dark:bg-slate-800/80 rounded-xl px-3.5 py-2.5 transition-all border border-slate-200/50 dark:border-slate-700/50 focus-within:border-[#01a9a0] focus-within:ring-2 focus-within:ring-[#01a9a0]/20 focus-within:bg-white dark:focus-within:bg-slate-800">
               <Mail className="w-4 h-4 text-slate-400 shrink-0 mr-2.5" />
               <input
                 type="email"
@@ -114,7 +114,7 @@ const ForgotPassword = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#2ba0ee] hover:bg-[#1f93df] text-white font-bold py-2.5 sm:py-3 px-6 rounded-full text-xs sm:text-sm tracking-wider uppercase shadow-md shadow-[#2ba0ee]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+            className="w-full bg-[#01a9a0] hover:bg-[#008f87] text-white font-bold py-2.5 sm:py-3 px-6 rounded-full text-xs sm:text-sm tracking-wider uppercase shadow-md shadow-[#01a9a0]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
           >
             {isSubmitting ? (
               <>
@@ -130,7 +130,7 @@ const ForgotPassword = () => {
           <div className="text-center pt-2">
             <Link
               to="/login"
-              className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#2ba0ee] dark:text-slate-400 dark:hover:text-[#2ba0ee] transition-colors font-medium"
+              className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#01a9a0] dark:text-slate-400 dark:hover:text-[#01a9a0] transition-colors font-medium"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Login</span>

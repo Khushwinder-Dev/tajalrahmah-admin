@@ -115,7 +115,7 @@ const Login = () => {
 
         {/* Email Input */}
         <div>
-          <div className="relative flex items-center bg-[#f1f3f7] dark:bg-slate-800/80 rounded-xl px-3.5 py-2.5 transition-all border border-slate-200/50 dark:border-slate-700/50 focus-within:border-[#2ba0ee] focus-within:ring-2 focus-within:ring-[#2ba0ee]/20 focus-within:bg-white dark:focus-within:bg-slate-800">
+          <div className="relative flex items-center bg-[#f1f3f7] dark:bg-slate-800/80 rounded-xl px-3.5 py-2.5 transition-all border border-slate-200/50 dark:border-slate-700/50 focus-within:border-[#01a9a0] focus-within:ring-2 focus-within:ring-[#01a9a0]/20 focus-within:bg-white dark:focus-within:bg-slate-800">
             <Mail className="w-4 h-4 text-slate-400 shrink-0 mr-2.5" />
             <input
               type="email"
@@ -133,7 +133,7 @@ const Login = () => {
 
         {/* Password Input */}
         <div>
-          <div className="relative flex items-center bg-[#f1f3f7] dark:bg-slate-800/80 rounded-xl px-3.5 py-2.5 transition-all border border-slate-200/50 dark:border-slate-700/50 focus-within:border-[#2ba0ee] focus-within:ring-2 focus-within:ring-[#2ba0ee]/20 focus-within:bg-white dark:focus-within:bg-slate-800">
+          <div className="relative flex items-center bg-[#f1f3f7] dark:bg-slate-800/80 rounded-xl px-3.5 py-2.5 transition-all border border-slate-200/50 dark:border-slate-700/50 focus-within:border-[#01a9a0] focus-within:ring-2 focus-within:ring-[#01a9a0]/20 focus-within:bg-white dark:focus-within:bg-slate-800">
             <Lock className="w-4 h-4 text-slate-400 shrink-0 mr-2.5" />
             <input
               type={showPassword ? "text" : "password"}
@@ -171,7 +171,7 @@ const Login = () => {
                 setRememberMe(e.target.checked);
                 setValue("rememberMe", e.target.checked);
               }}
-              className="w-4 h-4 rounded border-gray-300 text-[#2ba0ee] focus:ring-[#2ba0ee] cursor-pointer accent-[#2ba0ee]"
+              className="w-4 h-4 rounded border-gray-300 text-[#01a9a0] focus:ring-[#01a9a0] cursor-pointer accent-[#01a9a0]"
             />
             <span className="text-xs text-slate-600 dark:text-slate-300">
               Remember Me
@@ -180,7 +180,7 @@ const Login = () => {
 
           <Link
             to="/forgot-password"
-            className="text-xs font-medium text-[#2ba0ee] hover:text-[#1982cb] transition-colors"
+            className="text-xs font-medium text-[#01a9a0] hover:text-[#008f87] transition-colors"
           >
             Forgot Password
           </Link>
@@ -190,7 +190,7 @@ const Login = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-[#2ba0ee] hover:bg-[#1f93df] text-white font-bold py-2.5 sm:py-3 px-6 rounded-full text-xs sm:text-sm tracking-wider uppercase shadow-md shadow-[#2ba0ee]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+          className="w-full bg-[#01a9a0] hover:bg-[#008f87] text-white font-bold py-2.5 sm:py-3 px-6 rounded-full text-xs sm:text-sm tracking-wider uppercase shadow-md shadow-[#01a9a0]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
         >
           {isSubmitting ? (
             <>
@@ -208,7 +208,7 @@ const Login = () => {
             Don't have an account?{" "}
             <Link
               to="/signup"
-              className="text-[#2ba0ee] font-semibold hover:underline"
+              className="text-[#01a9a0] font-semibold hover:underline"
             >
               Sign up
             </Link>

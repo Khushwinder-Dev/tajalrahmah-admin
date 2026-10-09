@@ -164,7 +164,7 @@ html {
 
 /* Light mode (default) */
 :root {
-  --sidebar-bg: linear-gradient(270deg, #3596ff 0%, #79b9fa 118.42%);
+  --sidebar-bg: linear-gradient(270deg, #008f87 0%, #01a9a0 118.42%);
 }
 
 /* Dark mode */
@@ -336,9 +336,9 @@ html {
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #20b7fa;
-  --primary-initial: #04161d;
-  --primary-hover: #28ace2;
+  --primary: #01a9a0;
+  --primary-initial: #012b2a;
+  --primary-hover: #008f87;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -349,7 +349,7 @@ html {
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: #01a9a0;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -357,27 +357,25 @@ html {
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary: #01a9a0;
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-ring: #01a9a0;
 
   /* Add your brand colors here */
-  --brand-50: #eff6ff;
-  --brand-100: #dbeafe;
-  --brand-200: #bfdbfe;
-  --brand-300: #93c5fd;
-  --brand-400: #60a5fa;
-  --brand-500: #3b82f6;
-  --brand-600: #2563eb;
-  --brand-700: #1d4ed8;
-  --brand-800: #1e40af;
-  --brand-900: #1e3a8a;
-  --brand-950: #172554;
-
-  /* --primary: #28ace2; */
+  --brand-50: #f0faf9;
+  --brand-100: #c5f1ee;
+  --brand-200: #92e4de;
+  --brand-300: #55d1c9;
+  --brand-400: #23bdb4;
+  --brand-500: #01a9a0;
+  --brand-600: #008f87;
+  --brand-700: #01726d;
+  --brand-800: #055b57;
+  --brand-900: #074b48;
+  --brand-950: #012b2a;
 }
 
 .dark {
@@ -387,7 +385,7 @@ html {
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
+  --primary: #01a9a0;
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
