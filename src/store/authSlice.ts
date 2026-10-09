@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// authSlice.ts
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { userPermission } from "@/mockData/user-permission";
 
 // Define the User interface
 interface User {
@@ -18,9 +17,17 @@ interface AuthState {
   user: User | null;
 }
 
+export const defaultUser: User = {
+  userId: "rapid@gmail.com",
+  email: "rapid@gmail.com",
+  name: "Admin",
+  userRole: "admin",
+  permissions: userPermission,
+};
+
 const initialState: AuthState = {
-  isAuthenticated: false,
-  user: null,
+  isAuthenticated: true,
+  user: defaultUser,
 };
 
 const authSlice = createSlice({
@@ -32,13 +39,17 @@ const authSlice = createSlice({
       state.user = action.payload;
     },
     logout: (state) => {
-      console.log("🚪 Logging out user...");
-      state.isAuthenticated = false;
-      state.user = null;
-      // Clear remembered credentials on logout
+      console.log("🚪 Logout called, retaining default authentication");
+      state.isAuthenticated = true;
+      state.user = defaultUser;
       localStorage.removeItem("rememberedCredentials");
-      console.log("✅ Logout completed - cleared remembered credentials");
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase("persist/REHYDRATE", (state, action: any) => {
+      state.isAuthenticated = true;
+      state.user = action?.payload?.auth?.user || defaultUser;
+    });
   },
 });
 
