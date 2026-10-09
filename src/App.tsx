@@ -8,6 +8,10 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import { defaultUser, login } from "./store/authSlice";
 import Cookies from "js-cookie";
 
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+
 // countries
 import CountryPage from "./pages/Country/CountriesPage";
 import CountryDetails from "./pages/Country/CountryDetails";
@@ -43,10 +47,11 @@ function App() {
     <div className="scroll-smooth">
       <BrowserRouter>
         <Routes>
-          {/* Bypass login/signup pages directly to dashboard */}
-          <Route path="/login" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/signup" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/forgot-password" element={<Navigate to="/dashboard" replace />} />
+          {/* Auth pages accessible for development */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/register" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* Protected layout */}
           <Route element={<ProtectedRoute />}>
