@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useInactivityTimer } from "./hooks/useInactivityTimer";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -119,6 +119,7 @@ function App() {
             {/* Protected layout */}
             <Route element={<ProtectedRoute />}>
               <Route element={<MainLayout />}>
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/search" element={<Dashboard />} />
                 {/* Users */}
@@ -143,6 +144,9 @@ function App() {
                 <Route path="/countries/view" element={<CountryDetails />} />
               </Route>
             </Route>
+
+            {/* Fallback route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
       </div>
