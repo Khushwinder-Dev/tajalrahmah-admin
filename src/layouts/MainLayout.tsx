@@ -9,7 +9,7 @@ import useIsMobile from "../hooks/useIsMobile";
 const MainLayout = () => {
   const isMobile = useIsMobile();
   console.log("isMobile", isMobile);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true); // Start with true
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Sync sidebar state with mobile detection
   useEffect(() => {

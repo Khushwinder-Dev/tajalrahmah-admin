@@ -1,401 +1,443 @@
-import { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import {
-  Search,
-  X,
-  Globe,
-  ChevronLeft,
-  ChevronRight,
-  Sun,
-  Moon,
-  Receipt,
+  LayoutGrid,
+  ShoppingCart,
+  Package,
   Calculator,
-  Undo2,
+  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Globe,
+  Receipt,
+  RotateCcw,
+  FileSpreadsheet,
+  Boxes,
+  Warehouse,
+  ArrowLeftRight,
+  ClipboardList,
+  BookOpen,
+  Coins,
+  Building,
+  Sparkles,
 } from "lucide-react";
 import clsx from "clsx";
-import { useTheme } from "@/hooks/useTheme";
-import SubSidebar from "./SubSidebar";
-import type { LucideIcon } from "lucide-react";
 import useIsMobile from "@/hooks/useIsMobile";
 
-type SubSidebarItem = {
+interface SubMenuItem {
   label: string;
   path: string;
-  icon: LucideIcon;
-};
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
+}
 
-const Sidebar = ({
-  isSidebarCollapsed: isCollapsed,
-  onSidebarCollapseChange: setIsCollapsed,
-}: {
+interface MenuItem {
+  key: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  path?: string;
+  subItems?: SubMenuItem[];
+}
+
+export const Sidebar: React.FC<{
   isSidebarCollapsed: boolean;
   onSidebarCollapseChange: (collapsed: boolean) => void;
-}) => {
-  const { t, i18n } = useTranslation();
+}> = ({ isSidebarCollapsed, onSidebarCollapseChange }) => {
+  const { i18n } = useTranslation();
+  const location = useLocation();
   const navigate = useNavigate();
-  const [activeMenu, setActiveMenu] = useState("search");
-  const [subSidebarWidth, setSubSidebarWidth] = useState("w-0");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("general");
-  const { theme, toggleTheme } = useTheme();
-  const [subSidebarItems, setSubSidebarItems] = useState<SubSidebarItem[]>([]);
-  const [subSidebarTitle, setSubSidebarTitle] = useState<string>("");
   const isMobile = useIsMobile();
-
   const isRTL = i18n.language === "ar";
 
-  const fixedTopMenus = [
+  // Active flyout menu state
+  const [activeFlyoutKey, setActiveFlyoutKey] = useState<string | null>(null);
+  const flyoutRef = useRef<HTMLDivElement>(null);
+
+  const menuItems: MenuItem[] = [
     {
-      key: "search",
-      icon: Search,
-      label: t("sidebar.menu.search"),
-      path: "/search",
+      key: "dashboard",
+      label: "Dashboard",
+      icon: LayoutGrid,
+      path: "/dashboard",
     },
-  ];
-
-  const scrollableMenus = [
     {
-      key: "country",
-      icon: Globe,
-      label: t("sidebar.menu.country"),
-      path: "/countries",
-    },
-  ];
-
-  const fixedBottomMenus = [
-    {
-      key: "theme",
-      icon: theme === "dark" ? Sun : Moon,
-
-      label:
-        theme === "dark" ? t("navbar.theme.light") : t("navbar.theme.dark"),
-      action: toggleTheme,
-    },
-  ];
-
-  const handleMenuClick = (
-    key: string,
-    path?: string | null,
-    action?: () => void
-  ) => {
-    setActiveMenu(key);
-    if (action) {
-      action();
-    }
-    // ---- here we can use our relative logic --------------
-    else if (key === "sales") {
-      setSubSidebarItems([
+      key: "sales",
+      label: "Sales",
+      icon: ShoppingCart,
+      subItems: [
         {
-          label: t("sidebar.menu.salesInvoice"),
+          label: "Sales Invoice",
           path: "/sales-invoice",
           icon: Receipt,
         },
         {
-          label: t("sidebar.menu.salesReturn"),
+          label: "Sales Return",
           path: "/sales-return",
-          icon: Undo2,
+          icon: RotateCcw,
         },
         {
-          label: t("sidebar.menu.salesQuotation"),
+          label: "Sales Quotation",
           path: "/sales-quotation",
-          icon: Calculator,
+          icon: FileSpreadsheet,
         },
-      ]);
-      setSubSidebarTitle(t("sidebar.menu.sales"));
-      setSubSidebarWidth("w-56");
-    } else if (path) {
-      setSubSidebarItems([]);
-      setSubSidebarTitle("");
-      setSubSidebarWidth("w-56");
-      navigate(path);
+      ],
+    },
+    {
+      key: "inventory",
+      label: "Inventory",
+      icon: Package,
+      subItems: [
+        {
+          label: "Item Master",
+          path: "/item",
+          icon: Boxes,
+        },
+        {
+          label: "Warehouse Management",
+          path: "/warehouse",
+          icon: Warehouse,
+        },
+        {
+          label: "Stock Transfer",
+          path: "/stock-transfer",
+          icon: ArrowLeftRight,
+        },
+        {
+          label: "Stock Reports",
+          path: "/current-stock-reports",
+          icon: ClipboardList,
+        },
+      ],
+    },
+    {
+      key: "accounting",
+      label: "Accounting",
+      icon: Calculator,
+      subItems: [
+        {
+          label: "Chart of Accounts",
+          path: "/chart-of-accounts",
+          icon: BookOpen,
+        },
+        {
+          label: "Journal Entry",
+          path: "/JournalEntry",
+          icon: FileSpreadsheet,
+        },
+        {
+          label: "Cash Accounts",
+          path: "/cash",
+          icon: Coins,
+        },
+        {
+          label: "Bank Accounts",
+          path: "/bank",
+          icon: Building,
+        },
+      ],
+    },
+    {
+      key: "countries",
+      label: "Countries",
+      icon: Globe,
+      path: "/countries",
+    },
+  ];
+
+  // Close flyout when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        flyoutRef.current &&
+        !flyoutRef.current.contains(event.target as Node)
+      ) {
+        setActiveFlyoutKey(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleMenuClick = (item: MenuItem) => {
+    if (item.subItems && item.subItems.length > 0) {
+      setActiveFlyoutKey(activeFlyoutKey === item.key ? null : item.key);
+    } else if (item.path) {
+      setActiveFlyoutKey(null);
+      navigate(item.path);
     }
   };
 
-  const handleSubSidebarNavigate = (path: string) => {
+  const handleSubItemClick = (path: string) => {
     navigate(path);
-    // no need to close......
+    setActiveFlyoutKey(null);
   };
 
-  const closeSubSidebar = () => setSubSidebarWidth("w-0");
-  const handleTabClick = (tab: string) => setActiveTab(tab);
-  const toggleSidebar = () => setIsCollapsed(!isCollapsed);
+  const activeFlyoutItem = menuItems.find(
+    (item) => item.key === activeFlyoutKey
+  );
 
   return (
-    <div className="flex h-screen relative">
-      {/* Collapse/Expand Button */}
-      {isMobile ? null : (
-        <button
-          onClick={toggleSidebar}
-          className={clsx(
-            "absolute z-10 w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-all",
-            isRTL
-              ? isCollapsed
-                ? "right-0 translate-x-1/32"
-                : "right-[6rem] translate-x-1/32"
-              : isCollapsed
-              ? "left-0 -translate-x-1/32"
-              : "left-[6rem] -translate-x-1/32"
-          )}
-          style={{ top: "7%", transform: "translateY(-50%)" }}
-        >
-          {isCollapsed ? (
-            isRTL ? (
-              <ChevronLeft className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )
-          ) : isRTL ? (
-            <ChevronRight className="w-4 h-4" />
-          ) : (
-            <ChevronLeft className="w-4 h-4" />
-          )}
-        </button>
-      )}
-      {/* Main Sidebar */}
-      <div
+    <div
+      ref={flyoutRef}
+      className="relative flex h-full select-none"
+      dir={isRTL ? "rtl" : "ltr"}
+    >
+      {/* Main Sidebar Container */}
+      <aside
         className={clsx(
-          "flex flex-col transition-all duration-300 h-[calc(100vh-4rem)] font-sans",
-          isRTL ? "border-l border-[#3596FF]" : "border-r border-[#3596FF]",
-          isCollapsed ? "w-0 overflow-hidden" : `${isMobile ? "w-20" : "w-32"}`
+          "h-full flex flex-col bg-[#0b1320] border-slate-800/80 transition-all duration-300 ease-in-out font-sans z-30 shadow-xl",
+          isRTL ? "border-l" : "border-r",
+          isSidebarCollapsed ? "w-[72px]" : "w-64"
         )}
-        style={{
-          background:
-            "var(--sidebar-bg, linear-gradient(270deg, #3596FF 0%, #79B9FA 118.42%))",
-        }}
       >
-        {/* Top Fixed Menus */}
-        {!isCollapsed && (
-          <div className="space-y-2 w-full px-2">
-            {fixedTopMenus.map(({ key, icon: Icon, label, path }) => (
-              <button
-                key={key}
-                className={clsx(
-                  "relative group flex flex-col items-center transition-all w-full py-2 text-center",
-                  activeMenu === key ? "rounded-xl border" : ""
-                )}
-                style={
-                  activeMenu === key
-                    ? {
-                        borderRadius: "12px",
-                        border: "1px solid rgba(255, 255, 255, 0.20)",
-                        background: "rgba(255, 255, 255, 0.10)",
-                        boxShadow: "2px 2px 12px 0 #0053AD",
-                        color: "#FFF",
-                        fontSize: "14px",
-                        fontStyle: "normal",
-                        fontWeight: "700",
-                        lineHeight: "100%",
-                      }
-                    : {
-                        color: "#FFF",
-                        fontSize: "14px",
-                        fontStyle: "normal",
-                        fontWeight: "700",
-                        lineHeight: "100%",
-                      }
-                }
-                onClick={() => handleMenuClick(key, path)}
+        {/* Top Header: Company Profile */}
+        <div className="p-3.5 flex items-center justify-between border-b border-slate-800/70">
+          <div
+            className="flex items-center gap-3 cursor-pointer overflow-hidden"
+            onClick={() => isSidebarCollapsed && onSidebarCollapseChange(false)}
+            title={isSidebarCollapsed ? "Click to expand" : undefined}
+          >
+            {/* ABC Company Logo Badge */}
+            <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center p-1.5 shrink-0">
+              <svg
+                viewBox="0 0 40 40"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-full h-full"
               >
-                <div className="flex flex-col items-center w-full">
-                  <Icon className="w-6 h-6" />
-                  <span className="text-xs mt-2 whitespace-nowrap">
-                    {label}
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
+                <path
+                  d="M12 28L20 12L28 28"
+                  stroke="#0070ba"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M16 23H24"
+                  stroke="#10b981"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
 
-        {/* Scrollable Middle Menus */}
-        {!isCollapsed && (
-          <div className="flex-1 overflow-y-auto overflow-x-hidden py-2 px-2 smooth-scroll scroll-smooth">
-            {scrollableMenus.map(({ key, icon: Icon, label, path }) => (
-              <button
-                key={key}
-                className={clsx(
-                  "relative group flex flex-col items-center transition-all w-full my-2 py-2 cursor-pointer text-center",
-                  activeMenu === key ? "rounded-xl border" : ""
-                )}
-                style={
-                  activeMenu === key
-                    ? {
-                        borderRadius: "12px",
-                        border: "1px solid rgba(255, 255, 255, 0.20)",
-                        background: "rgba(255, 255, 255, 0.10)",
-                        boxShadow: "2px 2px 12px 0 #0053AD",
-                        color: "#FFF",
-                        fontSize: "14px",
-                        fontStyle: "normal",
-                        fontWeight: "700",
-                        lineHeight: "100%",
-                      }
-                    : {
-                        color: "#FFF",
-                        fontSize: "14px",
-                        fontStyle: "normal",
-                        fontWeight: "700",
-                        lineHeight: "100%",
-                      }
-                }
-                onClick={() => handleMenuClick(key, path)}
-              >
-                <div className="flex flex-col items-center w-full">
-                  <Icon className="w-6 h-6" />
-                  <span className="text-xs mt-2 whitespace-nowrap">
-                    {label}
-                  </span>
-                </div>
-              </button>
-            ))}
+            {/* Company Info (Visible when expanded) */}
+            {!isSidebarCollapsed && (
+              <div className="min-w-0">
+                <h2 className="text-sm font-bold text-white tracking-tight truncate leading-tight">
+                  ABC Trading LLC
+                </h2>
+                <p className="text-[11px] text-slate-400 truncate mt-0.5 font-normal">
+                  Client company
+                </p>
+              </div>
+            )}
           </div>
-        )}
 
-        {/* Bottom Fixed Menus */}
-        {!isCollapsed && (
-          <div className="space-y-8 w-full px-2 py-4">
-            {fixedBottomMenus.map(({ key, icon: Icon, label, action }) => (
-              <button
-                key={key}
-                className={clsx(
-                  "relative group flex flex-col items-center transition-all w-full py-1 text-center",
-                  activeMenu === key ? "rounded-xl border" : ""
-                )}
-                style={
-                  activeMenu === key
-                    ? {
-                        borderRadius: "12px",
-                        border: "1px solid rgba(255, 255, 255, 0.20)",
-                        background: "rgba(255, 255, 255, 0.10)",
-                        boxShadow: "2px 2px 12px 0 #0053AD",
-                        color: "#FFF",
-                        fontSize: "14px",
-                        fontStyle: "normal",
-                        fontWeight: "700",
-                        lineHeight: "100%",
-                      }
-                    : {
-                        color: "#FFF",
-                        fontSize: "14px",
-                        fontStyle: "normal",
-                        fontWeight: "700",
-                        lineHeight: "100%",
-                      }
-                }
-                onClick={() => handleMenuClick(key, null, action)}
-              >
-                <div className="flex flex-col items-center w-full">
-                  <Icon className="w-6 h-6" />
-                  <span className="text-xs mt-2 whitespace-nowrap">
-                    {label}
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Sub Sidebar */}
-      <div
-        className={clsx(
-          "transition-all duration-300 overflow-hidden bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 relative flex flex-col font-sans",
-          subSidebarWidth,
-          isRTL ? "border-l" : "border-r"
-        )}
-        dir={i18n.language}
-      >
-        {subSidebarWidth === "w-56" && subSidebarItems.length > 0 && (
-          <SubSidebar
-            items={subSidebarItems}
-            onNavigate={handleSubSidebarNavigate}
-            onClose={closeSubSidebar}
-            title={subSidebarTitle}
-          />
-        )}
-        {subSidebarWidth === "w-56" && subSidebarItems.length === 0 && (
-          <>
+          {/* Collapse/Expand Toggle Button */}
+          {!isSidebarCollapsed ? (
             <button
-              onClick={closeSubSidebar}
-              className={clsx(
-                "absolute top-2 p-1 mb-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-300 cursor-pointer",
-                isRTL ? "left-2" : "right-2"
-              )}
-              aria-label={t("sidebar.close")}
+              onClick={() => onSidebarCollapseChange(true)}
+              className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800/60 transition-colors shrink-0 cursor-pointer"
+              title="Collapse sidebar"
+              aria-label="Collapse sidebar"
             >
-              <X className="w-4 h-4" />
+              <PanelLeftClose className="w-4 h-4" />
             </button>
+          ) : (
+            <button
+              onClick={() => onSidebarCollapseChange(false)}
+              className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800/60 transition-colors shrink-0 cursor-pointer"
+              title="Expand sidebar"
+              aria-label="Expand sidebar"
+            >
+              <PanelLeftOpen className="w-4 h-4" />
+            </button>
+          )}
+        </div>
 
-            <div className="flex flex-col flex-1 p-4 pt-8 overflow-y-auto">
-              {activeMenu === "search" && (
-                <>
-                  <div className="mb-4">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder={t("sidebar.search.placeholder")}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className={clsx(
-                          "w-full pl-8 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand",
-                          isRTL ? "text-right pr-8 pl-4" : "text-left pl-8 pr-4"
-                        )}
-                      />
-                      <Search
-                        className={clsx(
-                          "absolute top-2.5 h-4 w-4 text-gray-400",
-                          isRTL ? "right-2" : "left-2"
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex gap-2 mb-4">
-                    {["general", "favourite", "recent"].map((tab) => (
-                      <button
-                        key={tab}
-                        className={clsx(
-                          "px-3 py-1 rounded text-sm",
-                          activeTab === tab
-                            ? "bg-blue-100 dark:bg-blue-900 text-blue-500 dark:text-blue-300"
-                            : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                        )}
-                        onClick={() => handleTabClick(tab)}
-                      >
-                        {t(`sidebar.search.tabs.${tab}`)}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
+        {/* Navigation Menu List */}
+        <nav className="flex-1 py-4 px-2 space-y-1.5 overflow-y-auto overflow-x-hidden">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isItemActive =
+              (item.path && location.pathname === item.path) ||
+              item.subItems?.some((sub) => location.pathname === sub.path);
+            const isFlyoutOpen = activeFlyoutKey === item.key;
 
-              <div className="flex-1">
-                {activeMenu === "search" && searchQuery && (
-                  <p
+            return (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => handleMenuClick(item)}
+                className={clsx(
+                  "w-full flex items-center rounded-xl transition-all duration-150 cursor-pointer group text-left",
+                  isSidebarCollapsed
+                    ? "justify-center p-2.5"
+                    : "justify-between px-3.5 py-3",
+                  isItemActive || isFlyoutOpen
+                    ? "bg-[#0070ba]/20 text-white font-semibold"
+                    : "text-slate-300 hover:text-white hover:bg-slate-800/70"
+                )}
+                title={isSidebarCollapsed ? item.label : undefined}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div
                     className={clsx(
-                      "text-sm text-gray-600 dark:text-gray-300",
-                      isRTL ? "text-right" : "text-left"
+                      "w-6 h-6 flex items-center justify-center shrink-0 transition-colors",
+                      isItemActive || isFlyoutOpen
+                        ? "text-[#38bdf8]"
+                        : "text-slate-400 group-hover:text-white"
                     )}
                   >
-                    {t("sidebar.search.results", { query: searchQuery })}
-                  </p>
-                )}
-
-                {activeMenu === "dashboard" && (
-                  <div className={isRTL ? "text-right" : "text-left"}>
-                    <h3 className="font-medium mb-2">
-                      {t("sidebar.dashboard.title")}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
-                      {t("sidebar.dashboard.content")}
-                    </p>
+                    <Icon className="w-5 h-5 stroke-[1.8]" />
                   </div>
+
+                  {!isSidebarCollapsed && (
+                    <span className="text-sm tracking-wide truncate">
+                      {item.label}
+                    </span>
+                  )}
+                </div>
+
+                {/* Right Chevron arrow for expandable items in expanded mode */}
+                {!isSidebarCollapsed && item.subItems && (
+                  <ChevronRight
+                    className={clsx(
+                      "w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0",
+                      isFlyoutOpen ? "rotate-90 text-[#38bdf8]" : ""
+                    )}
+                  />
                 )}
-              </div>
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Footer: Rapid ERP Branding */}
+        <div className="p-3.5 border-t border-slate-800/70 flex items-center gap-3">
+          {/* Rapid ERP Logo Badge */}
+          <div className="w-9 h-9 rounded-xl bg-white shadow-sm flex items-center justify-center p-1.5 shrink-0">
+            <svg
+              viewBox="0 0 36 36"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-full h-full text-[#0070ba]"
+            >
+              <rect
+                x="6"
+                y="10"
+                width="24"
+                height="4"
+                rx="2"
+                fill="#0070ba"
+              />
+              <rect
+                x="8"
+                y="17"
+                width="20"
+                height="4"
+                rx="2"
+                fill="#008fd3"
+              />
+              <rect
+                x="10"
+                y="24"
+                width="16"
+                height="4"
+                rx="2"
+                fill="#10b981"
+              />
+            </svg>
+          </div>
+
+          {!isSidebarCollapsed && (
+            <div className="min-w-0">
+              <h3 className="text-sm font-semibold text-white tracking-tight leading-tight truncate">
+                Rapid ERP
+              </h3>
+              <p className="text-[11px] text-slate-400 truncate mt-0.5 font-normal">
+                Powered by Rapid ERP
+              </p>
             </div>
-          </>
-        )}
-      </div>
+          )}
+        </div>
+      </aside>
+
+      {/* Flyout Submenu Panel (Image 2 Requirement) */}
+      {activeFlyoutItem && activeFlyoutItem.subItems && (
+        <div
+          className={clsx(
+            "absolute top-12 z-50 w-72 bg-white dark:bg-slate-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-800 p-4 transition-all duration-200",
+            isRTL
+              ? isSidebarCollapsed
+                ? "right-[80px]"
+                : "right-[268px]"
+              : isSidebarCollapsed
+              ? "left-[80px]"
+              : "left-[268px]"
+          )}
+        >
+          {/* Flyout Header */}
+          <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-[#0070ba]/10 text-[#0070ba] flex items-center justify-center">
+                <activeFlyoutItem.icon className="w-4 h-4" />
+              </div>
+              <h4 className="text-sm font-bold text-slate-800 dark:text-white">
+                {activeFlyoutItem.label}
+              </h4>
+            </div>
+            <button
+              onClick={() => setActiveFlyoutKey(null)}
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-semibold px-1.5 py-0.5 rounded cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Submenu List */}
+          <div className="space-y-1">
+            {activeFlyoutItem.subItems.map((subItem) => {
+              const SubIcon = subItem.icon;
+              const isSubActive = location.pathname === subItem.path;
+
+              return (
+                <button
+                  key={subItem.path}
+                  onClick={() => handleSubItemClick(subItem.path)}
+                  className={clsx(
+                    "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-[13px] font-medium transition-colors text-left cursor-pointer group",
+                    isSubActive
+                      ? "bg-[#0070ba] text-white"
+                      : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[#0070ba]"
+                  )}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <SubIcon
+                      className={clsx(
+                        "w-4 h-4 transition-colors",
+                        isSubActive
+                          ? "text-white"
+                          : "text-slate-400 group-hover:text-[#0070ba]"
+                      )}
+                    />
+                    <span>{subItem.label}</span>
+                  </div>
+
+                  <ChevronRight
+                    className={clsx(
+                      "w-3.5 h-3.5 opacity-60 group-hover:opacity-100",
+                      isSubActive ? "text-white" : "text-slate-400"
+                    )}
+                  />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

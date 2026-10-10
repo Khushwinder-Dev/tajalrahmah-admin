@@ -123,7 +123,7 @@ function MaterialButton({
         position: relative;
         display: inline-flex;
         border: 2px solid ${colors.outerBorder};
-        border-radius: 28px;
+        border-radius: 9999px;
         padding: 3px;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         background: transparent;
@@ -142,7 +142,7 @@ function MaterialButton({
       }
 
       .${styleId} {
-        --md-filled-button-container-shape: 24px;
+        --md-filled-button-container-shape: 9999px;
         --md-filled-button-container-height: ${
           size === "sm"
             ? "40px"

@@ -97,7 +97,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
         {/* Foreground Content */}
         <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 p-6 sm:p-8 lg:p-10 items-center gap-6 lg:gap-8">
           {/* Left Column: Brand, Description, Key Modules */}
-          <div className="lg:col-span-7 flex flex-col justify-center pr-0 lg:pr-4 py-2">
+          <div className="lg:col-span-7 flex flex-col justify-between self-stretch pr-0 lg:pr-4 py-2">
             {/* Top Section: Brand & Description (positioned in Blue section with Spacing A fixed) */}
             <div className="pb-8 sm:pb-10">
               <div className="flex items-center gap-3 mb-3">
@@ -154,29 +154,31 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
             </div>
 
             {/* Bottom Section: Key Modules (positioned cleanly in White section) */}
-            <div className="pt-6 sm:pt-8">
-              <h2 className="text-xs sm:text-sm font-bold text-slate-800 tracking-wide mb-3">
-                Key Modules
-              </h2>
+            <div className="pt-6 sm:pt-8 flex flex-col justify-between flex-1">
+              <div>
+                <h2 className="text-xs sm:text-sm font-bold text-slate-800 tracking-wide mb-3">
+                  Key Modules
+                </h2>
 
-              <div className="grid grid-cols-5 gap-2 sm:gap-3 max-w-sm sm:max-w-md">
-                {keyModules.map((module) => (
-                  <div
-                    key={module.label}
-                    className="flex flex-col items-center group cursor-pointer"
-                  >
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#f0f7fe] border border-[#d2e7f8] flex items-center justify-center text-[#0070ba] group-hover:bg-[#0070ba] group-hover:text-white group-hover:border-[#0070ba] group-hover:scale-105 group-hover:shadow-sm transition-all duration-200">
-                      {module.icon}
+                <div className="grid grid-cols-5 gap-2 sm:gap-3 max-w-sm sm:max-w-md">
+                  {keyModules.map((module) => (
+                    <div
+                      key={module.label}
+                      className="flex flex-col items-center group cursor-pointer"
+                    >
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#f0f7fe] border border-[#d2e7f8] flex items-center justify-center text-[#0070ba] group-hover:bg-[#0070ba] group-hover:text-white group-hover:border-[#0070ba] group-hover:scale-105 group-hover:shadow-sm transition-all duration-200">
+                        {module.icon}
+                      </div>
+                      <span className="text-[11px] font-medium text-slate-600 mt-1.5 text-center truncate w-full group-hover:text-[#0070ba] transition-colors">
+                        {module.label}
+                      </span>
                     </div>
-                    <span className="text-[11px] font-medium text-slate-600 mt-1.5 text-center truncate w-full group-hover:text-[#0070ba] transition-colors">
-                      {module.label}
-                    </span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
 
-              {/* Powered by Rapid ERP */}
-              <div className="mt-5 sm:mt-6 pt-1">
+              {/* Powered by Rapid ERP - Moved down to the bottom as marked */}
+              <div className="mt-8 sm:mt-14 pt-2">
                 <p className="text-xs text-slate-400 font-medium tracking-wide">
                   Powered by <span className="text-[#0070ba] font-semibold">Rapid ERP</span>
                 </p>
