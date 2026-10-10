@@ -192,67 +192,93 @@ export const Sidebar: React.FC<{
         )}
       >
         {/* Top Header: Company Profile */}
-        <div className="p-3.5 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
-          <div
-            className="flex items-center gap-3 cursor-pointer overflow-hidden"
-            onClick={() => isSidebarCollapsed && onSidebarCollapseChange(false)}
-            title={isSidebarCollapsed ? "Click to expand" : undefined}
-          >
-            {/* ABC Company Logo Badge */}
-            <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-gray-800 border border-slate-200/80 dark:border-gray-700 shadow-xs flex items-center justify-center p-1.5 shrink-0">
-              <svg
-                viewBox="0 0 40 40"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-full h-full"
-              >
-                <path
-                  d="M12 28L20 12L28 28"
-                  stroke="#0070ba"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M16 23H24"
-                  stroke="#10b981"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-
-            {/* Company Info (Visible when expanded) */}
-            {!isSidebarCollapsed && (
-              <div className="min-w-0">
-                <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight truncate leading-tight">
-                  ABC Trading LLC
-                </h2>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 font-normal">
-                  Client company
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Collapse/Expand Toggle Button */}
+        <div
+          className={clsx(
+            "border-b border-gray-100 dark:border-gray-800 transition-all",
+            isSidebarCollapsed
+              ? "p-2.5 flex items-center justify-center"
+              : "p-3.5 flex items-center justify-between"
+          )}
+        >
           {!isSidebarCollapsed ? (
-            <button
-              onClick={() => onSidebarCollapseChange(true)}
-              className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors shrink-0 cursor-pointer"
-              title="Collapse sidebar"
-              aria-label="Collapse sidebar"
-            >
-              <PanelLeftClose className="w-4 h-4" />
-            </button>
+            <>
+              <div className="flex items-center gap-3 overflow-hidden">
+                {/* ABC Company Logo Badge */}
+                <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-gray-800 border border-slate-200/80 dark:border-gray-700 shadow-xs flex items-center justify-center p-1.5 shrink-0">
+                  <svg
+                    viewBox="0 0 40 40"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-full h-full"
+                  >
+                    <path
+                      d="M12 28L20 12L28 28"
+                      stroke="#0070ba"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M16 23H24"
+                      stroke="#10b981"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </div>
+
+                {/* Company Info */}
+                <div className="min-w-0">
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight truncate leading-tight">
+                    ABC Trading LLC
+                  </h2>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 font-normal">
+                    Client company
+                  </p>
+                </div>
+              </div>
+
+              {/* Collapse Toggle Button */}
+              <button
+                onClick={() => onSidebarCollapseChange(true)}
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors shrink-0 cursor-pointer"
+                title="Collapse sidebar"
+                aria-label="Collapse sidebar"
+              >
+                <PanelLeftClose className="w-4 h-4" />
+              </button>
+            </>
           ) : (
+            /* Collapsed Header: Centered Logo with Expand on click / hover */
             <button
               onClick={() => onSidebarCollapseChange(false)}
-              className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors shrink-0 cursor-pointer"
+              className="w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-gray-800 dark:hover:bg-gray-700 border border-slate-200/80 dark:border-gray-700 flex items-center justify-center p-1.5 transition-all cursor-pointer group shadow-xs relative"
               title="Expand sidebar"
               aria-label="Expand sidebar"
             >
-              <PanelLeftOpen className="w-4 h-4" />
+              <div className="w-full h-full flex items-center justify-center group-hover:hidden transition-all">
+                <svg
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-full h-full"
+                >
+                  <path
+                    d="M12 28L20 12L28 28"
+                    stroke="#0070ba"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M16 23H24"
+                    stroke="#10b981"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+              <PanelLeftOpen className="w-5 h-5 text-[#0070ba] dark:text-[#38bdf8] hidden group-hover:block transition-all shrink-0" />
             </button>
           )}
         </div>
@@ -320,7 +346,12 @@ export const Sidebar: React.FC<{
         </nav>
 
         {/* Footer: Rapid ERP Branding */}
-        <div className="p-3.5 border-t border-gray-100 dark:border-gray-800 flex items-center gap-3">
+        <div
+          className={clsx(
+            "border-t border-gray-100 dark:border-gray-800 flex items-center transition-all",
+            isSidebarCollapsed ? "p-2.5 justify-center" : "p-3.5 gap-3"
+          )}
+        >
           {/* Rapid ERP Logo Badge */}
           <div className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-gray-800 border border-slate-200/80 dark:border-gray-700 shadow-xs flex items-center justify-center p-1.5 shrink-0">
             <svg
