@@ -5,6 +5,7 @@ import { z } from "zod";
 import { ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import AuthLayout from "@/components/auth/AuthLayout";
+import FloatingInput from "@/components/auth/FloatingInput";
 
 const formSchema = z.object({
   email: z.string().min(1, { message: "Please enter your username or email" }),
@@ -75,14 +76,14 @@ const ForgotPassword = () => {
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="w-full bg-[#0070ba] hover:bg-[#005fa0] text-white font-semibold py-3 px-6 rounded-xl sm:rounded-2xl text-sm tracking-wide shadow-md shadow-[#0070ba]/25 active:scale-[0.99] transition-all cursor-pointer"
+              className="w-full bg-[#0070ba] hover:bg-[#005fa0] text-white font-semibold py-3 px-6 rounded-full text-sm tracking-wide shadow-md shadow-[#0070ba]/25 active:scale-[0.99] transition-all cursor-pointer"
             >
               Back to Sign in
             </button>
           </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
           {resetError && (
             <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 rounded-xl border border-red-200">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -90,31 +91,21 @@ const ForgotPassword = () => {
             </div>
           )}
 
-          {/* Email input */}
-          <div>
-            <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1.5">
-              Enter your username or email address
-            </label>
-            <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-[#0070ba] focus-within:ring-2 focus-within:ring-[#0070ba]/20 transition-all">
-              <input
-                type="text"
-                placeholder="Username or email address"
-                className="w-full bg-transparent border-0 outline-none px-3.5 py-2.5 sm:py-3 text-sm text-slate-800 placeholder:text-slate-400 font-normal rounded-xl"
-                {...register("email")}
-              />
-            </div>
-            {errors.email && (
-              <p className="text-xs text-red-500 mt-1 pl-1">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
+          {/* Email input with Floating Notched Label */}
+          <FloatingInput
+            id="forgot-email"
+            label="Username or Email"
+            required
+            autoComplete="email"
+            error={errors.email?.message}
+            {...register("email")}
+          />
 
           {/* Submit button */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#0070ba] hover:bg-[#005fa0] text-white font-semibold py-3 px-6 rounded-xl sm:rounded-2xl text-sm sm:text-base tracking-wide shadow-md shadow-[#0070ba]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 cursor-pointer"
+            className="w-full bg-[#0070ba] hover:bg-[#005fa0] text-white font-semibold py-3 px-6 rounded-full text-sm sm:text-base tracking-wide shadow-md shadow-[#0070ba]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 cursor-pointer"
           >
             {isSubmitting ? (
               <>

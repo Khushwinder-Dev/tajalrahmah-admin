@@ -4,11 +4,12 @@ import { login } from "../store/authSlice";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import Cookies from "js-cookie";
 import { useState } from "react";
 import { userPermission } from "@/mockData/user-permission";
 import AuthLayout from "@/components/auth/AuthLayout";
+import FloatingInput from "@/components/auth/FloatingInput";
 
 const signupSchema = z
   .object({
@@ -33,8 +34,6 @@ const Signup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [signupError, setSignupError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -91,7 +90,7 @@ const Signup = () => {
       title="Create Account"
       subtitle="Enter your details to register a new account"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5 pt-1">
         {signupError && (
           <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 rounded-xl border border-red-200">
             <AlertCircle className="w-4 h-4 shrink-0" />
@@ -100,113 +99,50 @@ const Signup = () => {
         )}
 
         {/* Full Name */}
-        <div>
-          <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1">
-            Enter your Full Name
-          </label>
-          <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-[#0070ba] focus-within:ring-2 focus-within:ring-[#0070ba]/20 transition-all">
-            <input
-              type="text"
-              placeholder="Full Name"
-              className="w-full bg-transparent border-0 outline-none px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 font-normal rounded-xl"
-              {...register("name")}
-            />
-          </div>
-          {errors.name && (
-            <p className="text-xs text-red-500 mt-1 pl-1">
-              {errors.name.message}
-            </p>
-          )}
-        </div>
+        <FloatingInput
+          id="signup-name"
+          label="Full Name"
+          required
+          autoComplete="name"
+          error={errors.name?.message}
+          {...register("name")}
+        />
 
         {/* Email */}
-        <div>
-          <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1">
-            Enter your email address
-          </label>
-          <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-[#0070ba] focus-within:ring-2 focus-within:ring-[#0070ba]/20 transition-all">
-            <input
-              type="email"
-              placeholder="Username or email address"
-              className="w-full bg-transparent border-0 outline-none px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 font-normal rounded-xl"
-              {...register("email")}
-            />
-          </div>
-          {errors.email && (
-            <p className="text-xs text-red-500 mt-1 pl-1">
-              {errors.email.message}
-            </p>
-          )}
-        </div>
+        <FloatingInput
+          id="signup-email"
+          label="Email Address"
+          type="email"
+          required
+          autoComplete="email"
+          error={errors.email?.message}
+          {...register("email")}
+        />
 
         {/* Password */}
-        <div>
-          <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1">
-            Enter your Password
-          </label>
-          <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-[#0070ba] focus-within:ring-2 focus-within:ring-[#0070ba]/20 transition-all">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              className="w-full bg-transparent border-0 outline-none px-3.5 py-2.5 pr-10 text-sm text-slate-800 placeholder:text-slate-400 font-normal rounded-xl"
-              {...register("password")}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors p-1"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
-            </button>
-          </div>
-          {errors.password && (
-            <p className="text-xs text-red-500 mt-1 pl-1">
-              {errors.password.message}
-            </p>
-          )}
-        </div>
+        <FloatingInput
+          id="signup-password"
+          label="Password"
+          required
+          isPassword
+          autoComplete="new-password"
+          error={errors.password?.message}
+          {...register("password")}
+        />
 
         {/* Confirm Password */}
-        <div>
-          <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1">
-            Confirm your Password
-          </label>
-          <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-[#0070ba] focus-within:ring-2 focus-within:ring-[#0070ba]/20 transition-all">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              className="w-full bg-transparent border-0 outline-none px-3.5 py-2.5 pr-10 text-sm text-slate-800 placeholder:text-slate-400 font-normal rounded-xl"
-              {...register("confirmPassword")}
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors p-1"
-              aria-label={
-                showConfirmPassword ? "Hide password" : "Show password"
-              }
-            >
-              {showConfirmPassword ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
-            </button>
-          </div>
-          {errors.confirmPassword && (
-            <p className="text-xs text-red-500 mt-1 pl-1">
-              {errors.confirmPassword.message}
-            </p>
-          )}
-        </div>
+        <FloatingInput
+          id="signup-confirm-password"
+          label="Confirm Password"
+          required
+          isPassword
+          autoComplete="new-password"
+          error={errors.confirmPassword?.message}
+          {...register("confirmPassword")}
+        />
 
         {/* Terms agreement */}
-        <div>
+        <div className="px-1 pt-1">
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
@@ -229,7 +165,7 @@ const Signup = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-[#0070ba] hover:bg-[#005fa0] text-white font-semibold py-3 px-6 rounded-xl sm:rounded-2xl text-sm sm:text-base tracking-wide shadow-md shadow-[#0070ba]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 cursor-pointer"
+          className="w-full bg-[#0070ba] hover:bg-[#005fa0] text-white font-semibold py-3 px-6 rounded-full text-sm sm:text-base tracking-wide shadow-md shadow-[#0070ba]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 cursor-pointer"
         >
           {isSubmitting ? (
             <>

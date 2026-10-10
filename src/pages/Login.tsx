@@ -4,11 +4,12 @@ import { login } from "../store/authSlice";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import Cookies from "js-cookie";
 import { useState, useEffect } from "react";
 import { userPermission } from "@/mockData/user-permission";
 import AuthLayout from "@/components/auth/AuthLayout";
+import FloatingInput from "@/components/auth/FloatingInput";
 
 const formSchema = z.object({
   email: z.string().min(1, { message: "Please enter your username or email" }),
@@ -23,7 +24,6 @@ const Login = () => {
   const navigate = useNavigate();
   const [rememberMe, setRememberMe] = useState(false);
   const [loginError, setLoginError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -104,7 +104,7 @@ const Login = () => {
       brandHighlight="ABC Trading LLC"
       title="Sign in"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
         {loginError && (
           <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 rounded-xl border border-red-200">
             <AlertCircle className="w-4 h-4 shrink-0" />
@@ -112,60 +112,29 @@ const Login = () => {
           </div>
         )}
 
-        {/* Username or Email Input */}
-        <div>
-          <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1.5">
-            Enter your username or email address
-          </label>
-          <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-[#0070ba] focus-within:ring-2 focus-within:ring-[#0070ba]/20 transition-all">
-            <input
-              type="text"
-              placeholder="Username or email address"
-              className="w-full bg-transparent border-0 outline-none px-3.5 py-2.5 sm:py-3 text-sm text-slate-800 placeholder:text-slate-400 font-normal rounded-xl"
-              {...register("email")}
-            />
-          </div>
-          {errors.email && (
-            <p className="text-xs text-red-500 mt-1 pl-1">
-              {errors.email.message}
-            </p>
-          )}
-        </div>
+        {/* Username or Email with Floating Notched Label */}
+        <FloatingInput
+          id="login-email"
+          label="Username or Email"
+          required
+          autoComplete="username"
+          error={errors.email?.message}
+          {...register("email")}
+        />
 
-        {/* Password Input */}
-        <div>
-          <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1.5">
-            Enter your Password
-          </label>
-          <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-[#0070ba] focus-within:ring-2 focus-within:ring-[#0070ba]/20 transition-all">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              className="w-full bg-transparent border-0 outline-none px-3.5 py-2.5 sm:py-3 pr-10 text-sm text-slate-800 placeholder:text-slate-400 font-normal rounded-xl"
-              {...register("password")}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors p-1"
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
-            </button>
-          </div>
-          {errors.password && (
-            <p className="text-xs text-red-500 mt-1 pl-1">
-              {errors.password.message}
-            </p>
-          )}
-        </div>
+        {/* Password with Floating Notched Label & Eye Toggle */}
+        <FloatingInput
+          id="login-password"
+          label="Password"
+          required
+          isPassword
+          autoComplete="current-password"
+          error={errors.password?.message}
+          {...register("password")}
+        />
 
         {/* Remember Me & Forgot Password Row */}
-        <div className="flex items-center justify-between pt-0.5">
+        <div className="flex items-center justify-between pt-0.5 px-1">
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
@@ -191,7 +160,7 @@ const Login = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-[#0070ba] hover:bg-[#005fa0] text-white font-semibold py-3 px-6 rounded-xl sm:rounded-2xl text-sm sm:text-base tracking-wide shadow-md shadow-[#0070ba]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 cursor-pointer"
+          className="w-full bg-[#0070ba] hover:bg-[#005fa0] text-white font-semibold py-3 px-6 rounded-full text-sm sm:text-base tracking-wide shadow-md shadow-[#0070ba]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 cursor-pointer"
         >
           {isSubmitting ? (
             <>
