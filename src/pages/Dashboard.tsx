@@ -39,6 +39,16 @@ import {
   CheckCircle,
   AlertTriangle,
   Info,
+  FolderTree,
+  FileText,
+  MessageSquareQuote,
+  Briefcase,
+  FolderKanban,
+  SlidersHorizontal,
+  HelpCircle,
+  BellRing,
+  Lightbulb,
+  Building2,
 } from "lucide-react";
 import {
   XAxis,
@@ -147,18 +157,73 @@ const systemAlerts = [
   },
 ];
 
+const statCards = [
+  {
+    title: "Total Post Categories",
+    value: 5,
+    icon: FolderTree,
+  },
+  {
+    title: "Total Posts",
+    value: 3,
+    icon: FileText,
+  },
+  {
+    title: "Total Testimonials",
+    value: 4,
+    icon: MessageSquareQuote,
+  },
+  {
+    title: "Total Services",
+    value: 6,
+    icon: Briefcase,
+  },
+  {
+    title: "Total Projects",
+    value: 6,
+    icon: FolderKanban,
+  },
+  {
+    title: "Total Sliders",
+    value: 4,
+    icon: SlidersHorizontal,
+  },
+  {
+    title: "Total FAQ",
+    value: 5,
+    icon: HelpCircle,
+  },
+  {
+    title: "Total Subscribers",
+    value: 3,
+    icon: BellRing,
+  },
+  {
+    title: "Total Solutions",
+    value: 8,
+    icon: Lightbulb,
+  },
+  {
+    title: "Total Industries",
+    value: 7,
+    icon: Building2,
+  },
+  {
+    title: "Total Clients",
+    value: 5,
+    icon: Users,
+  },
+];
+
 const Dashboard: React.FC = () => {
   return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <Group justify="space-between" align="center">
           <div>
             <Text size="xl" fw={700} c="dark">
-              Dashboard Overview
-            </Text>
-            <Text size="sm" c="dimmed">
-              Welcome back! Here's what's happening in your system.
+              Dashboard
             </Text>
           </div>
           <Group>
@@ -180,100 +245,30 @@ const Dashboard: React.FC = () => {
         </Group>
       </div>
 
-      {/* Stats Cards */}
-      <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg">
-        <Card withBorder radius="md" padding="lg">
-          <Group justify="space-between">
-            <div>
-              <Text c="dimmed" size="sm" tt="uppercase" fw={700}>
-                Total Users
-              </Text>
-              <Text fw={700} size="xl">
-                2,847
-              </Text>
-              <Text c="teal" size="sm" fw={500}>
-                <TrendingUp
-                  size={16}
-                  style={{ display: "inline", marginRight: 4 }}
-                />
-                +23% from last month
-              </Text>
+      {/* Stats Cards Grid Matching Reference */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {statCards.map((card, index) => {
+          const IconComponent = card.icon;
+          return (
+            <div
+              key={index}
+              className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700/60 shadow-[0_1px_3px_rgba(0,0,0,0.05)] hover:shadow-md transition-all duration-200 flex items-center justify-between group"
+            >
+              <div>
+                <p className="text-xs sm:text-[13px] font-semibold text-[#10b981] dark:text-[#34d399] tracking-wide mb-1.5">
+                  {card.title}
+                </p>
+                <p className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">
+                  {card.value}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center text-slate-400 dark:text-slate-300 group-hover:text-[#10b981] group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 transition-colors shrink-0">
+                <IconComponent className="w-5 h-5 stroke-[1.8]" />
+              </div>
             </div>
-            <ThemeIcon color="blue" size={60} radius="md">
-              <Users size={32} />
-            </ThemeIcon>
-          </Group>
-        </Card>
-
-        <Card withBorder radius="md" padding="lg">
-          <Group justify="space-between">
-            <div>
-              <Text c="dimmed" size="sm" tt="uppercase" fw={700}>
-                Active Modules
-              </Text>
-              <Text fw={700} size="xl">
-                47
-              </Text>
-              <Text c="green" size="sm" fw={500}>
-                <Activity
-                  size={16}
-                  style={{ display: "inline", marginRight: 4 }}
-                />
-                All systems operational
-              </Text>
-            </div>
-            <ThemeIcon color="green" size={60} radius="md">
-              <Package size={32} />
-            </ThemeIcon>
-          </Group>
-        </Card>
-
-        <Card withBorder radius="md" padding="lg">
-          <Group justify="space-between">
-            <div>
-              <Text c="dimmed" size="sm" tt="uppercase" fw={700}>
-                Languages
-              </Text>
-              <Text fw={700} size="xl">
-                24
-              </Text>
-              <Text c="blue" size="sm" fw={500}>
-                <Globe
-                  size={16}
-                  style={{ display: "inline", marginRight: 4 }}
-                />
-                5 recently added
-              </Text>
-            </div>
-            <ThemeIcon color="grape" size={60} radius="md">
-              <Languages size={32} />
-            </ThemeIcon>
-          </Group>
-        </Card>
-
-        <Card withBorder radius="md" padding="lg">
-          <Group justify="space-between">
-            <div>
-              <Text c="dimmed" size="sm" tt="uppercase" fw={700}>
-                Revenue
-              </Text>
-              <Text fw={700} size="xl">
-                $73,580
-              </Text>
-              <Text c="red" size="sm" fw={500}>
-                <TrendingDown
-                  size={16}
-                  style={{ display: "inline", marginRight: 4 }}
-                />
-                -2% from target
-              </Text>
-            </div>
-            <ThemeIcon color="orange" size={60} radius="md">
-              <DollarSign size={32} />
-            </ThemeIcon>
-          </Group>
-        </Card>
-      </SimpleGrid>
+          );
+        })}
+      </div>
 
       {/* Charts Section */}
       <Grid>
