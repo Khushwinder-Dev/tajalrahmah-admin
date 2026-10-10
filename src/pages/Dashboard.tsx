@@ -77,7 +77,7 @@ const userGrowthData = [
 
 const moduleUsageData = [
   { name: "Countries", value: 850, color: "#3b82f6" },
-  { name: "Users", value: 720, color: "#10b981" },
+  { name: "Users", value: 720, color: "#0070ba" },
   { name: "Cities", value: 650, color: "#f59e0b" },
   { name: "States", value: 580, color: "#ef4444" },
   { name: "Companies", value: 420, color: "#8b5cf6" },
@@ -255,14 +255,14 @@ const Dashboard: React.FC = () => {
               className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700/60 shadow-[0_1px_3px_rgba(0,0,0,0.05)] hover:shadow-md transition-all duration-200 flex items-center justify-between group"
             >
               <div>
-                <p className="text-xs sm:text-[13px] font-semibold text-[#10b981] dark:text-[#34d399] tracking-wide mb-1.5">
+                <p className="text-xs sm:text-[13px] font-semibold text-[#0070ba] dark:text-[#38bdf8] tracking-wide mb-1.5">
                   {card.title}
                 </p>
                 <p className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100">
                   {card.value}
                 </p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center text-slate-400 dark:text-slate-300 group-hover:text-[#10b981] group-hover:bg-emerald-50 dark:group-hover:bg-emerald-950/40 transition-colors shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-[#0070ba]/10 dark:bg-[#0070ba]/20 flex items-center justify-center text-[#0070ba] dark:text-[#38bdf8] group-hover:bg-[#0070ba] group-hover:text-white transition-all shrink-0">
                 <IconComponent className="w-5 h-5 stroke-[1.8]" />
               </div>
             </div>
@@ -300,8 +300,8 @@ const Dashboard: React.FC = () => {
                   type="monotone"
                   dataKey="active"
                   stackId="1"
-                  stroke="#10b981"
-                  fill="#10b981"
+                  stroke="#0070ba"
+                  fill="#0070ba"
                   fillOpacity={0.3}
                 />
               </AreaChart>

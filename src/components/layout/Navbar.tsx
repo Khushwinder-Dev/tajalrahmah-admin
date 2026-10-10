@@ -131,7 +131,7 @@ const Navbar = ({
                 >
                   <Menu size={18} />
                 </button>
-                <div className="text-xl font-bold text-brand dark:text-brand text-primary">
+                <div className="text-xl font-bold text-[#0070ba] dark:text-[#38bdf8]">
                   RAPID
                 </div>
               </div>
@@ -270,7 +270,7 @@ const Navbar = ({
               {/* Desktop Layout */}
               {/* Left: Brand Logo - 2 columns */}
               <div className="col-span-2">
-                <div className="text-2xl font-bold text-brand dark:text-brand text-primary">
+                <div className="text-2xl font-bold text-[#0070ba] dark:text-[#38bdf8]">
                   RAPID
                 </div>
               </div>

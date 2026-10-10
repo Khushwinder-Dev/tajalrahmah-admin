@@ -399,9 +399,9 @@ html {
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #01a9a0;
+  --primary: #0070ba;
   --primary-initial: #012b2a;
-  --primary-hover: #008f87;
+  --primary-hover: #005fa0;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -412,7 +412,7 @@ html {
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: #01a9a0;
+  --ring: #0070ba;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -420,12 +420,12 @@ html {
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #01a9a0;
+  --sidebar-primary: #0070ba;
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: #01a9a0;
+  --sidebar-ring: #0070ba;
 
   /* Add your brand colors here */
   --brand-50: #f0faf9;
@@ -433,8 +433,8 @@ html {
   --brand-200: #92e4de;
   --brand-300: #55d1c9;
   --brand-400: #23bdb4;
-  --brand-500: #01a9a0;
-  --brand-600: #008f87;
+  --brand-500: #0070ba;
+  --brand-600: #005fa0;
   --brand-700: #01726d;
   --brand-800: #055b57;
   --brand-900: #074b48;
@@ -448,7 +448,7 @@ html {
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: #01a9a0;
+  --primary: #0070ba;
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);

@@ -180,7 +180,7 @@ const Footer = () => {
             <span className="text-sm text-gray-500 dark:text-gray-400">
               Powered by{" "}
               <span
-                className="text-primary font-medium cursor-pointer"
+                className="text-[#0070ba] dark:text-[#38bdf8] font-medium cursor-pointer"
                 onClick={() =>
                   window.open("https://rapidsmarterp.com/", "_blank")
                 }
@@ -193,7 +193,7 @@ const Footer = () => {
           {/* Middle Section - Help (center-aligned) */}
           <div className="flex justify-center items-center cursor-pointer order-2">
             <button
-              className="flex items-center text-sm text-gray-500 hover:text-primary dark:hover:text-gray-300 transition-colors cursor-pointer"
+              className="flex items-center text-sm text-gray-500 hover:text-[#0070ba] dark:hover:text-[#38bdf8] transition-colors cursor-pointer"
               onClick={() => setIsHelpModalOpen(true)}
             >
               Need help?

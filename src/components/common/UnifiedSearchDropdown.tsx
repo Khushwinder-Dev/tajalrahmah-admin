@@ -280,9 +280,9 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
                 type="button"
                 onClick={() => setActiveCategory(cat)}
                 className={clsx(
-                  "px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-medium transition-all cursor-pointer shrink-0",
+                  "px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full text-[10px] sm:text-[11px] font-medium transition-all cursor-pointer shrink-0 leading-normal",
                   isActive
-                    ? "bg-[#e6f7f6] dark:bg-[#008f87]/25 text-[#008f87] dark:text-[#55d1c9] border border-[#008f87]/30 shadow-xs"
+                    ? "bg-[#0070ba]/10 dark:bg-[#0070ba]/20 text-[#0070ba] dark:text-[#38bdf8] border border-[#0070ba]/30 shadow-xs font-semibold"
                     : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200/80 dark:hover:bg-gray-700"
                 )}
               >
