@@ -173,7 +173,7 @@ const Login = () => {
         </button>
 
         {/* Sign up link */}
-        <div className="text-center pt-3">
+        {/* <div className="text-center pt-3">
           <p className="text-xs text-slate-500">
             Don't have an account?{" "}
             <Link
@@ -183,7 +183,7 @@ const Login = () => {
               Sign up
             </Link>
           </p>
-        </div>
+        </div> */}
       </form>
     </AuthLayout>
   );

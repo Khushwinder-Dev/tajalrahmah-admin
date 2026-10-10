@@ -186,20 +186,20 @@ export const Sidebar: React.FC<{
       {/* Main Sidebar Container */}
       <aside
         className={clsx(
-          "h-full flex flex-col bg-[#0b1320] border-slate-800/80 transition-all duration-300 ease-in-out font-sans z-30 shadow-xl",
+          "h-full flex flex-col bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out font-sans z-30 shadow-xs",
           isRTL ? "border-l" : "border-r",
           isSidebarCollapsed ? "w-[72px]" : "w-64"
         )}
       >
         {/* Top Header: Company Profile */}
-        <div className="p-3.5 flex items-center justify-between border-b border-slate-800/70">
+        <div className="p-3.5 flex items-center justify-between border-b border-gray-100 dark:border-gray-800">
           <div
             className="flex items-center gap-3 cursor-pointer overflow-hidden"
             onClick={() => isSidebarCollapsed && onSidebarCollapseChange(false)}
             title={isSidebarCollapsed ? "Click to expand" : undefined}
           >
             {/* ABC Company Logo Badge */}
-            <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center p-1.5 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-gray-800 border border-slate-200/80 dark:border-gray-700 shadow-xs flex items-center justify-center p-1.5 shrink-0">
               <svg
                 viewBox="0 0 40 40"
                 fill="none"
@@ -225,10 +225,10 @@ export const Sidebar: React.FC<{
             {/* Company Info (Visible when expanded) */}
             {!isSidebarCollapsed && (
               <div className="min-w-0">
-                <h2 className="text-sm font-bold text-white tracking-tight truncate leading-tight">
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight truncate leading-tight">
                   ABC Trading LLC
                 </h2>
-                <p className="text-[11px] text-slate-400 truncate mt-0.5 font-normal">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 font-normal">
                   Client company
                 </p>
               </div>
@@ -239,7 +239,7 @@ export const Sidebar: React.FC<{
           {!isSidebarCollapsed ? (
             <button
               onClick={() => onSidebarCollapseChange(true)}
-              className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800/60 transition-colors shrink-0 cursor-pointer"
+              className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors shrink-0 cursor-pointer"
               title="Collapse sidebar"
               aria-label="Collapse sidebar"
             >
@@ -248,7 +248,7 @@ export const Sidebar: React.FC<{
           ) : (
             <button
               onClick={() => onSidebarCollapseChange(false)}
-              className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800/60 transition-colors shrink-0 cursor-pointer"
+              className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors shrink-0 cursor-pointer"
               title="Expand sidebar"
               aria-label="Expand sidebar"
             >
@@ -272,13 +272,13 @@ export const Sidebar: React.FC<{
                 type="button"
                 onClick={() => handleMenuClick(item)}
                 className={clsx(
-                  "w-full flex items-center rounded-xl transition-all duration-150 cursor-pointer group text-left",
+                  "sidebar-btn w-full flex items-center rounded-lg transition-all duration-150 cursor-pointer group text-left",
                   isSidebarCollapsed
                     ? "justify-center p-2.5"
                     : "justify-between px-3.5 py-3",
                   isItemActive || isFlyoutOpen
-                    ? "bg-[#0070ba]/20 text-white font-semibold"
-                    : "text-slate-300 hover:text-white hover:bg-slate-800/70"
+                    ? "text-[#0070ba] font-semibold dark:text-[#38bdf8]"
+                    : "text-slate-600 hover:text-[#0070ba] dark:text-slate-400 dark:hover:text-[#38bdf8]"
                 )}
                 title={isSidebarCollapsed ? item.label : undefined}
               >
@@ -287,8 +287,8 @@ export const Sidebar: React.FC<{
                     className={clsx(
                       "w-6 h-6 flex items-center justify-center shrink-0 transition-colors",
                       isItemActive || isFlyoutOpen
-                        ? "text-[#38bdf8]"
-                        : "text-slate-400 group-hover:text-white"
+                        ? "text-[#0070ba] dark:text-[#38bdf8]"
+                        : "text-slate-400 group-hover:text-[#0070ba] dark:text-slate-500 dark:group-hover:text-[#38bdf8]"
                     )}
                   >
                     <Icon className="w-5 h-5 stroke-[1.8]" />
@@ -305,8 +305,12 @@ export const Sidebar: React.FC<{
                 {!isSidebarCollapsed && item.subItems && (
                   <ChevronRight
                     className={clsx(
-                      "w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0",
-                      isFlyoutOpen ? "rotate-90 text-[#38bdf8]" : ""
+                      "w-4 h-4 transition-transform duration-200 shrink-0",
+                      isFlyoutOpen
+                        ? "rotate-90 text-[#0070ba] dark:text-[#38bdf8]"
+                        : isItemActive
+                        ? "text-[#0070ba] dark:text-[#38bdf8]"
+                        : "text-slate-400 group-hover:text-[#0070ba] dark:text-slate-500 dark:group-hover:text-[#38bdf8]"
                     )}
                   />
                 )}
@@ -316,9 +320,9 @@ export const Sidebar: React.FC<{
         </nav>
 
         {/* Footer: Rapid ERP Branding */}
-        <div className="p-3.5 border-t border-slate-800/70 flex items-center gap-3">
+        <div className="p-3.5 border-t border-gray-100 dark:border-gray-800 flex items-center gap-3">
           {/* Rapid ERP Logo Badge */}
-          <div className="w-9 h-9 rounded-xl bg-white shadow-sm flex items-center justify-center p-1.5 shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-slate-50 dark:bg-gray-800 border border-slate-200/80 dark:border-gray-700 shadow-xs flex items-center justify-center p-1.5 shrink-0">
             <svg
               viewBox="0 0 36 36"
               fill="none"
@@ -354,10 +358,10 @@ export const Sidebar: React.FC<{
 
           {!isSidebarCollapsed && (
             <div className="min-w-0">
-              <h3 className="text-sm font-semibold text-white tracking-tight leading-tight truncate">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-white tracking-tight leading-tight truncate">
                 Rapid ERP
               </h3>
-              <p className="text-[11px] text-slate-400 truncate mt-0.5 font-normal">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 font-normal">
                 Powered by Rapid ERP
               </p>
             </div>
@@ -375,8 +379,8 @@ export const Sidebar: React.FC<{
                 ? "right-[80px]"
                 : "right-[268px]"
               : isSidebarCollapsed
-              ? "left-[80px]"
-              : "left-[268px]"
+                ? "left-[80px]"
+                : "left-[268px]"
           )}
         >
           {/* Flyout Header */}
@@ -408,10 +412,10 @@ export const Sidebar: React.FC<{
                   key={subItem.path}
                   onClick={() => handleSubItemClick(subItem.path)}
                   className={clsx(
-                    "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-[13px] font-medium transition-colors text-left cursor-pointer group",
+                    "sidebar-btn w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs sm:text-[13px] font-medium transition-colors text-left cursor-pointer group",
                     isSubActive
-                      ? "bg-[#0070ba] text-white"
-                      : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[#0070ba]"
+                      ? "text-[#0070ba] font-semibold dark:text-[#38bdf8]"
+                      : "text-slate-600 dark:text-slate-300 hover:text-[#0070ba] dark:hover:text-[#38bdf8]"
                   )}
                 >
                   <div className="flex items-center gap-2.5">
@@ -419,8 +423,8 @@ export const Sidebar: React.FC<{
                       className={clsx(
                         "w-4 h-4 transition-colors",
                         isSubActive
-                          ? "text-white"
-                          : "text-slate-400 group-hover:text-[#0070ba]"
+                          ? "text-[#0070ba] dark:text-[#38bdf8]"
+                          : "text-slate-400 group-hover:text-[#0070ba] dark:group-hover:text-[#38bdf8]"
                       )}
                     />
                     <span>{subItem.label}</span>
@@ -428,8 +432,10 @@ export const Sidebar: React.FC<{
 
                   <ChevronRight
                     className={clsx(
-                      "w-3.5 h-3.5 opacity-60 group-hover:opacity-100",
-                      isSubActive ? "text-white" : "text-slate-400"
+                      "w-3.5 h-3.5 transition-colors",
+                      isSubActive
+                        ? "text-[#0070ba] dark:text-[#38bdf8]"
+                        : "text-slate-400 group-hover:text-[#0070ba] dark:group-hover:text-[#38bdf8]"
                     )}
                   />
                 </button>

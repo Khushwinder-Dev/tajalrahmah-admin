@@ -11,9 +11,42 @@ import "./index.css";
 import "./i18n";
 import { Toaster } from "react-hot-toast";
 
-// Optional custom theme
+// Global Mantine theme with round pill radius for inputs and buttons
 const theme = createTheme({
   primaryColor: "blue",
+  defaultRadius: "xl",
+  components: {
+    Button: {
+      defaultProps: {
+        radius: "xl",
+      },
+    },
+    TextInput: {
+      defaultProps: {
+        radius: "xl",
+      },
+    },
+    PasswordInput: {
+      defaultProps: {
+        radius: "xl",
+      },
+    },
+    Select: {
+      defaultProps: {
+        radius: "xl",
+      },
+    },
+    Input: {
+      defaultProps: {
+        radius: "xl",
+      },
+    },
+    ActionIcon: {
+      defaultProps: {
+        radius: "xl",
+      },
+    },
+  },
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
