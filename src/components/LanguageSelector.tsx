@@ -116,23 +116,21 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           </div>
 
           {/* Search Input */}
-          <div className="relative my-2.5">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-              <Search className="w-4 h-4" />
-            </div>
+          <div className="flex items-center w-full px-3.5 py-2 my-2.5 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-full focus-within:ring-1 focus-within:ring-[#0070ba] dark:focus-within:ring-[#38bdf8] focus-within:border-[#0070ba] dark:focus-within:border-[#38bdf8] transition-all">
+            <Search className="w-4 h-4 text-gray-400 shrink-0 mr-2.5 rtl:mr-0 rtl:ml-2.5" />
             <input
               ref={searchInputRef}
               type="text"
               placeholder="Search language..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-8 py-2 text-xs sm:text-sm bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-full text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#0070ba] dark:focus:ring-[#38bdf8] transition-all"
+              className="flex-1 bg-transparent border-0 outline-none p-0 text-xs sm:text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 font-normal leading-normal"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer"
+                className="p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer ml-1.5 rtl:ml-0 rtl:mr-1.5 shrink-0"
                 aria-label="Clear search"
               >
                 <X className="w-3.5 h-3.5" />

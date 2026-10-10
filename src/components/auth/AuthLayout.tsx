@@ -186,7 +186,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
               </div>
 
               {/* Powered by Rapid ERP */}
-              <div className="mt-8 sm:mt-14 pt-2">
+              <div className="mt-8 sm:mt-10 pt-2">
                 <p className="text-xs text-slate-400 font-medium tracking-wide">
                   Powered by <span className="text-[#0070ba] font-semibold">Rapid ERP</span>
                 </p>
