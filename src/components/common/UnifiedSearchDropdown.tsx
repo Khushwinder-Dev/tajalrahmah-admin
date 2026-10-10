@@ -5,7 +5,6 @@ import {
   Search,
   X,
   ChevronRight,
-  Sparkles,
   ShieldCheck,
   Droplets,
   Layers,
@@ -154,8 +153,6 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
 
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<Category>("All");
-  const [aiResponse, setAiResponse] = useState<string | null>(null);
-  const [isAiLoading, setIsAiLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -163,11 +160,9 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
       setTimeout(() => {
         inputRef.current?.focus();
       }, 50);
-      setAiResponse(null);
     } else {
       setQuery("");
       setActiveCategory("All");
-      setAiResponse(null);
     }
   }, [open]);
 
@@ -204,18 +199,6 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
     setOpen(false);
   };
 
-  const handleAskAi = () => {
-    setIsAiLoading(true);
-    setAiResponse(null);
-    setTimeout(() => {
-      setIsAiLoading(false);
-      setAiResponse(
-        query
-          ? `AI Agent: Found 3 relevant matches for "${query}" in ERP services & solutions.`
-          : "AI Agent: How can I help you find services, solutions, or ERP records today?"
-      );
-    }, 600);
-  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -239,9 +222,9 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
         sideOffset={8}
         className="w-[calc(100vw-24px)] sm:w-[420px] md:w-[450px] max-w-[460px] p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-[0_15px_45px_rgba(0,0,0,0.16)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)] z-50 flex flex-col gap-3 outline-none animate-in fade-in-0 zoom-in-95 duration-150"
       >
-        {/* Top Search Input Box with Teal/Brand Border (Compact) */}
-        <div className="flex items-center w-full px-3 py-1.5 sm:py-2 rounded-xl border-[1.5px] border-[#009b90] dark:border-[#008f87] bg-white dark:bg-gray-800/90 shadow-xs focus-within:ring-2 focus-within:ring-[#009b90]/30 transition-all">
-          <Search className="w-4 h-4 text-[#009b90] dark:text-[#38bdf8] mr-2.5 shrink-0 stroke-[2.2]" />
+        {/* Top Search Input Box with Brand Border (Compact) */}
+        <div className="flex items-center w-full px-3 py-1.5 sm:py-2 rounded-xl border-[1.5px] border-[#0070ba] dark:border-[#0070ba]/60 bg-white dark:bg-gray-800/90 shadow-xs focus-within:ring-2 focus-within:ring-[#0070ba]/25 transition-all">
+          <Search className="w-4 h-4 text-[#0070ba] dark:text-[#38bdf8] mr-2.5 shrink-0 stroke-[2.2]" />
 
           <input
             ref={inputRef}
@@ -300,7 +283,7 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="text-[11px] text-[#009b90] dark:text-[#38bdf8] hover:underline cursor-pointer font-medium"
+              className="text-[11px] text-[#0070ba] dark:text-[#38bdf8] hover:underline cursor-pointer font-medium"
             >
               Clear filter
             </button>
@@ -320,12 +303,12 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
                   className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-all cursor-pointer group text-left"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#eaf8f7] dark:bg-[#008f87]/15 border border-[#c1ede9] dark:border-[#008f87]/30 text-[#008f87] dark:text-[#55d1c9] flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-[#009b90] group-hover:text-white group-hover:border-[#009b90] transition-all duration-150">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#0070ba]/10 dark:bg-[#0070ba]/20 border border-[#0070ba]/20 dark:border-[#0070ba]/30 text-[#0070ba] dark:text-[#38bdf8] flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-[#0070ba] group-hover:text-white group-hover:border-[#0070ba] transition-all duration-150">
                       <Icon className="w-4 h-4 stroke-[1.8]" />
                     </div>
 
                     <div className="min-w-0">
-                      <h4 className="text-xs sm:text-[13px] font-semibold text-gray-900 dark:text-white truncate group-hover:text-[#009b90] dark:group-hover:text-[#55d1c9] transition-colors leading-tight">
+                      <h4 className="text-xs sm:text-[13px] font-semibold text-gray-900 dark:text-white truncate group-hover:text-[#0070ba] dark:group-hover:text-[#38bdf8] transition-colors leading-tight">
                         {item.title}
                       </h4>
                       <p className="text-[11px] text-gray-500 dark:text-gray-400 font-normal truncate mt-0.5">
@@ -334,7 +317,7 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
                     </div>
                   </div>
 
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-[#009b90] dark:group-hover:text-[#55d1c9] group-hover:translate-x-0.5 transition-all shrink-0 ml-1.5" />
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-[#0070ba] dark:group-hover:text-[#38bdf8] group-hover:translate-x-0.5 transition-all shrink-0 ml-1.5" />
                 </button>
               );
             })
@@ -345,30 +328,6 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
           )}
         </div>
 
-        {/* AI Agent Banner / Response */}
-        {aiResponse && (
-          <div className="p-2.5 bg-[#e6f7f6] dark:bg-[#008f87]/20 border border-[#008f87]/30 rounded-xl text-xs text-[#0070ba] dark:text-[#38bdf8] flex items-start gap-1.5 animate-in fade-in duration-150">
-            <Sparkles className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-500" />
-            <span>{aiResponse}</span>
-          </div>
-        )}
-
-        {/* Footer: "Need help finding something?" + "Ask AI Agent" */}
-        <div className="border-t border-gray-100 dark:border-gray-800 pt-2.5 sm:pt-3 flex items-center justify-between">
-          <span className="text-xs text-gray-500 dark:text-gray-400 font-normal">
-            Need help finding something?
-          </span>
-
-          <button
-            type="button"
-            onClick={handleAskAi}
-            disabled={isAiLoading}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#e6f7f6] dark:bg-[#008f87]/20 hover:bg-[#d5f3f1] dark:hover:bg-[#008f87]/30 text-[#008f87] dark:text-[#55d1c9] text-xs font-semibold rounded-xl transition-all cursor-pointer shadow-xs disabled:opacity-60"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-            <span>{isAiLoading ? "Asking AI..." : "Ask AI Agent"}</span>
-          </button>
-        </div>
       </PopoverContent>
     </Popover>
   );

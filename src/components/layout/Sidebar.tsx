@@ -303,8 +303,8 @@ export const Sidebar: React.FC<{
                     ? "justify-center p-2.5"
                     : "justify-between px-3.5 py-3",
                   isItemActive || isFlyoutOpen
-                    ? "text-[#0070ba] font-semibold dark:text-[#38bdf8]"
-                    : "text-slate-600 hover:text-[#0070ba] dark:text-slate-400 dark:hover:text-[#38bdf8]"
+                    ? "text-[#0070ba] font-bold dark:text-[#38bdf8]"
+                    : "text-slate-700 font-semibold hover:text-[#0070ba] dark:text-slate-200 dark:hover:text-[#38bdf8]"
                 )}
                 title={isSidebarCollapsed ? item.label : undefined}
               >
@@ -314,14 +314,14 @@ export const Sidebar: React.FC<{
                       "w-6 h-6 flex items-center justify-center shrink-0 transition-colors",
                       isItemActive || isFlyoutOpen
                         ? "text-[#0070ba] dark:text-[#38bdf8]"
-                        : "text-slate-400 group-hover:text-[#0070ba] dark:text-slate-500 dark:group-hover:text-[#38bdf8]"
+                        : "text-slate-400 group-hover:text-[#0070ba] dark:text-slate-400 dark:group-hover:text-[#38bdf8]"
                     )}
                   >
-                    <Icon className="w-5 h-5 stroke-[1.8]" />
+                    <Icon className="w-5 h-5 stroke-[2]" />
                   </div>
 
                   {!isSidebarCollapsed && (
-                    <span className="text-sm tracking-wide truncate">
+                    <span className="text-sm font-semibold tracking-wide truncate">
                       {item.label}
                     </span>
                   )}
@@ -331,12 +331,12 @@ export const Sidebar: React.FC<{
                 {!isSidebarCollapsed && item.subItems && (
                   <ChevronRight
                     className={clsx(
-                      "w-4 h-4 transition-transform duration-200 shrink-0",
+                      "w-4 h-4 stroke-[2] transition-transform duration-200 shrink-0",
                       isFlyoutOpen
                         ? "rotate-90 text-[#0070ba] dark:text-[#38bdf8]"
                         : isItemActive
                         ? "text-[#0070ba] dark:text-[#38bdf8]"
-                        : "text-slate-400 group-hover:text-[#0070ba] dark:text-slate-500 dark:group-hover:text-[#38bdf8]"
+                        : "text-slate-400 group-hover:text-[#0070ba] dark:text-slate-400 dark:group-hover:text-[#38bdf8]"
                     )}
                   />
                 )}
@@ -443,22 +443,22 @@ export const Sidebar: React.FC<{
                   key={subItem.path}
                   onClick={() => handleSubItemClick(subItem.path)}
                   className={clsx(
-                    "sidebar-btn w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs sm:text-[13px] font-medium transition-colors text-left cursor-pointer group",
+                    "sidebar-btn w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs sm:text-[13px] font-semibold transition-colors text-left cursor-pointer group",
                     isSubActive
-                      ? "text-[#0070ba] font-semibold dark:text-[#38bdf8]"
-                      : "text-slate-600 dark:text-slate-300 hover:text-[#0070ba] dark:hover:text-[#38bdf8]"
+                      ? "text-[#0070ba] font-bold dark:text-[#38bdf8]"
+                      : "text-slate-700 dark:text-slate-200 hover:text-[#0070ba] dark:hover:text-[#38bdf8]"
                   )}
                 >
                   <div className="flex items-center gap-2.5">
                     <SubIcon
                       className={clsx(
-                        "w-4 h-4 transition-colors",
+                        "w-4 h-4 stroke-[2] transition-colors",
                         isSubActive
                           ? "text-[#0070ba] dark:text-[#38bdf8]"
                           : "text-slate-400 group-hover:text-[#0070ba] dark:group-hover:text-[#38bdf8]"
                       )}
                     />
-                    <span>{subItem.label}</span>
+                    <span className="font-semibold">{subItem.label}</span>
                   </div>
 
                   <ChevronRight
