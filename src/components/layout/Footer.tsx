@@ -173,8 +173,8 @@ const Footer = () => {
 
   return (
     <>
-      <footer className="border-t border-gray-200 dark:border-gray-700 py-4 px-6 bg-gray-100 dark:bg-gray-800">
-        <div className="flex justify-center sm:justify-between flex-wrap gap-4 mx-auto cursor-pointer">
+      <footer className="border-t border-gray-200 dark:border-gray-700 h-14 px-6 bg-gray-100 dark:bg-gray-800 flex items-center shrink-0">
+        <div className="flex justify-between items-center w-full cursor-pointer">
           {/* Left Section - Powered by (left-aligned) / Live Chat (right-aligned in RTL) */}
           <div className="flex justify-start rtl:justify-end items-center cursor-pointer order-1 rtl:order-3">
             <span className="text-sm text-gray-500 dark:text-gray-400">

@@ -348,8 +348,8 @@ export const Sidebar: React.FC<{
         {/* Footer: Rapid ERP Branding */}
         <div
           className={clsx(
-            "border-t border-gray-100 dark:border-gray-800 flex items-center transition-all",
-            isSidebarCollapsed ? "p-2.5 justify-center" : "p-3.5 gap-3"
+            "border-t border-gray-200 dark:border-gray-700 h-14 flex items-center transition-all shrink-0",
+            isSidebarCollapsed ? "px-2.5 justify-center" : "px-3.5 gap-3"
           )}
         >
           {/* Rapid ERP Logo Badge */}
