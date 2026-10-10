@@ -16,7 +16,7 @@ const MainLayout = () => {
     setIsSidebarCollapsed(isMobile);
   }, [isMobile]);
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-screen overflow-hidden bg-white dark:bg-gray-900 transition-colors">
       {/* Navbar with fixed height */}
       <div className="flex-shrink-0 z-50">
         <Navbar
@@ -39,7 +39,7 @@ const MainLayout = () => {
         <div
           className={`flex flex-col flex-1 min-w-0 ${
             isMobile ? "overflow-y-auto" : "overflow-hidden"
-          } dark:bg-gray-900`}
+          } bg-gray-50 dark:bg-gray-900 transition-colors`}
         >
           {/* Taskbar positioned above outlet, taking outlet's width */}
           <div className="flex-shrink-0 z-40">
@@ -50,7 +50,7 @@ const MainLayout = () => {
           <div
             className={`flex-1 ${
               isMobile ? "overflow-y-auto overflow-x-hidden" : "overflow-hidden"
-            } px-3 py-3`}
+            } bg-gray-50 dark:bg-gray-900 px-3 py-3`}
           >
             <Outlet />
           </div>

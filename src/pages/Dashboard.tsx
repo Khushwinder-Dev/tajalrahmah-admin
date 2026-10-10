@@ -217,12 +217,12 @@ const statCards = [
 
 const Dashboard: React.FC = () => {
   return (
-    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+    <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-900 min-h-screen text-slate-800 dark:text-slate-100 transition-colors">
       {/* Header */}
       <div className="mb-6">
         <Group justify="space-between" align="center">
           <div>
-            <Text size="xl" fw={700} c="dark">
+            <Text size="xl" fw={700} className="text-gray-900 dark:text-white">
               Dashboard
             </Text>
           </div>

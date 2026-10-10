@@ -14,8 +14,10 @@ export const useTheme = () => {
     const root = window.document.documentElement;
     if (theme === "dark") {
       root.classList.add("dark");
+      root.setAttribute("data-mantine-color-scheme", "dark");
     } else {
       root.classList.remove("dark");
+      root.setAttribute("data-mantine-color-scheme", "light");
     }
     localStorage.theme = theme;
   }, [theme]);
@@ -48,8 +50,10 @@ export const useTheme = () => {
     const root = window.document.documentElement;
     if (nextTheme === "dark") {
       root.classList.add("dark");
+      root.setAttribute("data-mantine-color-scheme", "dark");
     } else {
       root.classList.remove("dark");
+      root.setAttribute("data-mantine-color-scheme", "light");
     }
     window.dispatchEvent(new Event("theme-change"));
   };

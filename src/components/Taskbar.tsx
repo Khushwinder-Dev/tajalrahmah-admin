@@ -142,16 +142,16 @@ const Taskbar: React.FC<TaskbarProps> = ({ onModuleRestore }) => {
   }
 
   return (
-    <div className="w-full bg-gradient-to-r from-slate-100 to-slate-200 border-b border-slate-300 shadow-sm relative">
+    <div className="w-full bg-slate-100 dark:bg-slate-900 border-b border-slate-300 dark:border-slate-800 shadow-xs relative">
       <div className="flex items-center h-10">
         {/* Left Scroll Button */}
         {canScrollLeft && (
           <button
             onClick={scrollLeft}
-            className="flex-shrink-0 w-8 h-full bg-slate-100 hover:bg-slate-200 border-r border-slate-300 flex items-center justify-center transition-colors z-10 cursor-pointer"
+            className="flex-shrink-0 w-8 h-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border-r border-slate-300 dark:border-slate-700 flex items-center justify-center transition-colors z-10 cursor-pointer"
             title="Scroll left"
           >
-            <ChevronLeft size={14} className="text-slate-600" />
+            <ChevronLeft size={14} className="text-slate-600 dark:text-slate-300" />
           </button>
         )}
 
@@ -177,8 +177,8 @@ const Taskbar: React.FC<TaskbarProps> = ({ onModuleRestore }) => {
                       group relative flex items-center gap-2 h-10 px-4 py-2 cursor-pointer select-none whitespace-nowrap transition-all duration-200
                       ${
                         isActive
-                          ? "bg-blue-50 border-b-2 border-blue-500"
-                          : "bg-white hover:bg-slate-50"
+                          ? "bg-blue-50 dark:bg-blue-950/40 border-b-2 border-blue-500"
+                          : "bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700"
                       }
                     `}
                     onClick={() => handleRestore(module)}
@@ -204,8 +204,8 @@ const Taskbar: React.FC<TaskbarProps> = ({ onModuleRestore }) => {
                       text-xs font-medium transition-colors
                       ${
                         isActive
-                          ? "text-blue-700 font-semibold"
-                          : "text-slate-700 group-hover:text-slate-900"
+                          ? "text-blue-700 dark:text-blue-300 font-semibold"
+                          : "text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white"
                       }
                     `}
                     >
@@ -219,8 +219,8 @@ const Taskbar: React.FC<TaskbarProps> = ({ onModuleRestore }) => {
                         flex-shrink-0 w-4 h-4 rounded-full bg-transparent flex items-center justify-center transition-all duration-200 ml-2 cursor-pointer
                         ${
                           isActive
-                            ? "hover:bg-blue-200 text-blue-600 opacity-70 hover:opacity-100"
-                            : "hover:bg-slate-300 hover:text-slate-700 opacity-0 group-hover:opacity-100"
+                            ? "hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-600 dark:text-blue-300 opacity-70 hover:opacity-100"
+                            : "hover:bg-slate-300 dark:hover:bg-slate-600 hover:text-slate-700 dark:hover:text-slate-200 opacity-0 group-hover:opacity-100"
                         }
                       `}
                       title="Close"
@@ -231,7 +231,7 @@ const Taskbar: React.FC<TaskbarProps> = ({ onModuleRestore }) => {
 
                   {/* Vertical Divider - Show between tabs but not after the last one */}
                   {index < allMinimizedModules.length - 1 && (
-                    <div className="w-px h-6 bg-slate-300 self-center flex-shrink-0" />
+                    <div className="w-px h-6 bg-slate-300 dark:bg-slate-700 self-center flex-shrink-0" />
                   )}
                 </React.Fragment>
               );
