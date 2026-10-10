@@ -1,66 +1,207 @@
 import React from "react";
+import {
+  Percent,
+  ShoppingCart,
+  PieChart,
+  Calculator,
+  Cloud,
+} from "lucide-react";
 
 interface AuthLayoutProps {
-  badge?: string;
-  title?: string;
+  welcomePrefix?: string;
+  brandHighlight?: string;
+  title: string;
   subtitle?: string;
   children: React.ReactNode;
 }
 
 export const AuthLayout: React.FC<AuthLayoutProps> = ({
-  badge = "WELCOME BACK",
-  title = "Sign in to start your session",
+  welcomePrefix = "Welcome to",
+  brandHighlight = "ABC Trading LLC",
+  title,
   subtitle,
   children,
 }) => {
+  const keyModules = [
+    {
+      label: "Sale",
+      icon: <Percent className="w-5 h-5 stroke-[2.2]" />,
+    },
+    {
+      label: "Purchase",
+      icon: <ShoppingCart className="w-5 h-5 stroke-[2.2]" />,
+    },
+    {
+      label: "Instalment",
+      icon: <PieChart className="w-5 h-5 stroke-[2.2]" />,
+    },
+    {
+      label: "Accounts",
+      icon: <Calculator className="w-5 h-5 stroke-[2.2]" />,
+    },
+    {
+      label: "Cloud Base",
+      icon: <Cloud className="w-5 h-5 stroke-[2.2]" />,
+    },
+  ];
+
   return (
-    <div
-      className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-cover bg-center bg-no-repeat relative"
-      style={{
-        backgroundImage: "url('/images/background.png')",
-        backgroundColor: "#01a9a0",
-      }}
-    >
-      {/* Subtle backdrop overlay for enhanced contrast */}
-      <div className="absolute inset-0 bg-[#012b2a]/10 backdrop-blur-[1px] pointer-events-none" />
+    <div className="min-h-screen w-full py-8 sm:py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center font-sans antialiased relative overflow-hidden bg-[#242b38] selection:bg-[#008fd3] selection:text-white">
+      {/* Background C: Rich Glassmorphic Ambient Lighting & Orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Soft diffused spotlight at top */}
+        <div
+          className="absolute inset-0 opacity-80"
+          style={{
+            background:
+              "radial-gradient(ellipse 90% 60% at 50% 0%, rgba(100, 116, 139, 0.45) 0%, rgba(30, 36, 48, 0.9) 70%, rgba(15, 20, 28, 1) 100%)",
+          }}
+        />
 
-      {/* Main Split Card */}
-      <div className="relative z-10 w-full max-w-[860px] bg-white dark:bg-slate-900 rounded-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.25)] overflow-hidden flex flex-col md:flex-row transition-all duration-300">
-        {/* Left Side: Brand Banner ("RAPID") */}
-        <div className="w-full md:w-[46%] bg-gradient-to-br from-[#01c4ba] via-[#01a9a0] to-[#008f87] p-8 sm:p-10 md:p-12 flex flex-col items-center justify-center text-center relative overflow-hidden select-none min-h-[180px] md:min-h-[460px]">
-          {/* Subtle decorative circles */}
-          <div className="absolute -top-16 -left-16 w-48 h-48 bg-white/10 rounded-full blur-xl pointer-events-none" />
-          <div className="absolute -bottom-16 -right-16 w-52 h-52 bg-white/15 rounded-full blur-xl pointer-events-none" />
+        {/* Ambient Glowing Orbs providing glassmorphism depth */}
+        <div className="absolute -top-24 left-1/4 w-[36rem] h-[36rem] bg-[#008fd3]/20 rounded-full blur-[120px]" />
+        <div className="absolute top-1/3 -right-20 w-[32rem] h-[32rem] bg-[#0070ba]/25 rounded-full blur-[130px]" />
+        <div className="absolute -bottom-24 left-1/3 w-[38rem] h-[38rem] bg-slate-400/15 rounded-full blur-[140px]" />
 
-          {/* Typography matching reference image */}
-          <div className="relative z-10 flex flex-col items-center justify-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-wider leading-[1.08] drop-shadow-sm font-sans uppercase">
-              RAPID
-            </h1>
-          </div>
+        {/* Frosted Glass Specular Sheen across background */}
+        <div
+          className="absolute inset-0 opacity-25 backdrop-blur-[40px]"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.03) 50%, rgba(0,0,0,0.2) 100%)",
+          }}
+        />
+      </div>
+
+      {/* Main Container Card: (B border removed - pure clean rounded canvas with glass shadow) */}
+      <div className="relative z-10 w-full max-w-[1140px] bg-white rounded-[28px] sm:rounded-[36px] shadow-[0_25px_80px_rgba(0,10,30,0.45)] overflow-hidden flex flex-col">
+        {/* Split Background Layers */}
+        {/* Top Half: SAP Blue Gradient matching Image 2 with comfortable height for Spacing A */}
+        <div className="absolute top-0 left-0 right-0 h-[52%] sm:h-[53%] bg-gradient-to-r from-[#008fd3] via-[#0070ba] to-[#005e9e] overflow-hidden">
+          {/* Subtle SAP-style geometric highlight */}
+          <div
+            className="absolute inset-0 opacity-20 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(120deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%, rgba(0,40,80,0.35) 100%)",
+            }}
+          />
+          {/* Soft ambient lighting */}
+          <div className="absolute -top-20 -left-20 w-80 h-80 bg-white/15 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-10 right-1/4 w-72 h-72 bg-[#008fd3]/30 rounded-full blur-2xl pointer-events-none" />
         </div>
 
-        {/* Right Side: Form Content */}
-        <div className="w-full md:w-[54%] p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col justify-center bg-white dark:bg-slate-900">
-          {/* Header */}
-          <div className="text-center mb-6">
-            {badge && (
-              <span className="text-[11px] sm:text-xs font-bold tracking-widest text-[#01a9a0] uppercase block mb-1">
-                {badge}
-              </span>
-            )}
-            <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white leading-snug">
-              {title}
-            </h2>
-            {subtitle && (
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                {subtitle}
-              </p>
-            )}
+        {/* Bottom Half: Clean White Background */}
+        <div className="absolute bottom-0 left-0 right-0 h-[48%] sm:h-[47%] bg-white" />
+
+        {/* Foreground Content */}
+        <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 p-6 sm:p-8 lg:p-10 items-center gap-6 lg:gap-8">
+          {/* Left Column: Brand, Description, Key Modules */}
+          <div className="lg:col-span-7 flex flex-col justify-center pr-0 lg:pr-4 py-2">
+            {/* Top Section: Brand & Description (positioned in Blue section with Spacing A fixed) */}
+            <div className="pb-8 sm:pb-10">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 bg-white/15 backdrop-blur-md rounded-2xl flex items-center justify-center p-2 border border-white/30 shadow-inner">
+                  <svg
+                    viewBox="0 0 48 48"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-full h-full text-white drop-shadow-sm"
+                  >
+                    <path
+                      d="M8 34L14 14L22 28L28 14L34 26"
+                      stroke="white"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M19 35L24 40L40 18"
+                      stroke="white"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M32 18H40V26"
+                      stroke="white"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
+                    ABC Trading LLC
+                  </h1>
+                </div>
+              </div>
+
+              {/* Subtitle / Description Paragraphs (generous breathing room above blue line) */}
+              <div className="space-y-2 mt-3 max-w-lg text-white/90 text-xs sm:text-[13px] leading-relaxed">
+                <p>
+                  ABC Trading LLC is a comprehensive, all-in-one accounting and
+                  business management solution designed specifically for mobile
+                  shop owners and electronics retailers.
+                </p>
+                <p className="text-white/80 hidden sm:block">
+                  From tracking daily sales and purchases to managing complex
+                  Charts of Accounts, ABC Trading LLC simplifies your financial
+                  operations with precision and speed.
+                </p>
+              </div>
+            </div>
+
+            {/* Bottom Section: Key Modules (positioned cleanly in White section) */}
+            <div className="pt-6 sm:pt-8">
+              <h2 className="text-xs sm:text-sm font-bold text-slate-800 tracking-wide mb-3">
+                Key Modules
+              </h2>
+
+              <div className="grid grid-cols-5 gap-2 sm:gap-3 max-w-sm sm:max-w-md">
+                {keyModules.map((module) => (
+                  <div
+                    key={module.label}
+                    className="flex flex-col items-center group cursor-pointer"
+                  >
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#f0f7fe] border border-[#d2e7f8] flex items-center justify-center text-[#0070ba] group-hover:bg-[#0070ba] group-hover:text-white group-hover:border-[#0070ba] group-hover:scale-105 group-hover:shadow-sm transition-all duration-200">
+                      {module.icon}
+                    </div>
+                    <span className="text-[11px] font-medium text-slate-600 mt-1.5 text-center truncate w-full group-hover:text-[#0070ba] transition-colors">
+                      {module.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Form Body */}
-          {children}
+          {/* Right Column: Floating Auth Form Card */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end">
+            <div className="w-full max-w-[420px] bg-white rounded-3xl shadow-[0_15px_45px_rgba(0,35,80,0.15)] p-6 sm:p-8 border border-slate-100 flex flex-col justify-center relative">
+              {/* Header inside Form Card */}
+              <div className="mb-4 sm:mb-5">
+                <p className="text-xs sm:text-sm font-medium text-slate-600">
+                  {welcomePrefix}{" "}
+                  <span className="text-[#0070ba] font-bold">
+                    {brandHighlight}
+                  </span>
+                </p>
+                <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mt-0.5">
+                  {title}
+                </h3>
+                {subtitle && (
+                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                    {subtitle}
+                  </p>
+                )}
+              </div>
+
+              {/* Form Content */}
+              {children}
+            </div>
+          </div>
         </div>
       </div>
     </div>

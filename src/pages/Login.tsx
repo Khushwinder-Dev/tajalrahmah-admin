@@ -4,17 +4,15 @@ import { login } from "../store/authSlice";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import Cookies from "js-cookie";
 import { useState, useEffect } from "react";
 import { userPermission } from "@/mockData/user-permission";
 import AuthLayout from "@/components/auth/AuthLayout";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z
-    .string()
-    .min(1, { message: "Password is required" }),
+  email: z.string().min(1, { message: "Please enter your username or email" }),
+  password: z.string().min(1, { message: "Password is required" }),
   rememberMe: z.boolean().optional(),
 });
 
@@ -102,25 +100,28 @@ const Login = () => {
 
   return (
     <AuthLayout
-      badge="WELCOME BACK"
-      title="Sign in to start your session"
+      welcomePrefix="Welcome to"
+      brandHighlight="ABC Trading LLC"
+      title="Sign in"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {loginError && (
-          <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 rounded-xl border border-red-200 dark:border-red-900/50">
+          <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 rounded-xl border border-red-200">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{loginError}</span>
           </div>
         )}
 
-        {/* Email Input */}
+        {/* Username or Email Input */}
         <div>
-          <div className="relative flex items-center bg-[#f1f3f7] dark:bg-slate-800/80 rounded-xl px-3.5 py-2.5 transition-all border border-slate-200/50 dark:border-slate-700/50 focus-within:border-[#01a9a0] focus-within:ring-2 focus-within:ring-[#01a9a0]/20 focus-within:bg-white dark:focus-within:bg-slate-800">
-            <Mail className="w-4 h-4 text-slate-400 shrink-0 mr-2.5" />
+          <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1.5">
+            Enter your username or email address
+          </label>
+          <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-[#0070ba] focus-within:ring-2 focus-within:ring-[#0070ba]/20 transition-all">
             <input
-              type="email"
-              placeholder="Email"
-              className="w-full bg-transparent border-0 outline-none text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 font-normal"
+              type="text"
+              placeholder="Username or email address"
+              className="w-full bg-transparent border-0 outline-none px-3.5 py-2.5 sm:py-3 text-sm text-slate-800 placeholder:text-slate-400 font-normal rounded-xl"
               {...register("email")}
             />
           </div>
@@ -133,18 +134,20 @@ const Login = () => {
 
         {/* Password Input */}
         <div>
-          <div className="relative flex items-center bg-[#f1f3f7] dark:bg-slate-800/80 rounded-xl px-3.5 py-2.5 transition-all border border-slate-200/50 dark:border-slate-700/50 focus-within:border-[#01a9a0] focus-within:ring-2 focus-within:ring-[#01a9a0]/20 focus-within:bg-white dark:focus-within:bg-slate-800">
-            <Lock className="w-4 h-4 text-slate-400 shrink-0 mr-2.5" />
+          <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1.5">
+            Enter your Password
+          </label>
+          <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-[#0070ba] focus-within:ring-2 focus-within:ring-[#0070ba]/20 transition-all">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className="w-full bg-transparent border-0 outline-none text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 font-normal"
+              className="w-full bg-transparent border-0 outline-none px-3.5 py-2.5 sm:py-3 pr-10 text-sm text-slate-800 placeholder:text-slate-400 font-normal rounded-xl"
               {...register("password")}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1"
+              className="absolute right-3 text-slate-400 hover:text-slate-600 transition-colors p-1"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
@@ -161,7 +164,7 @@ const Login = () => {
           )}
         </div>
 
-        {/* Remember Me & Forgot Password */}
+        {/* Remember Me & Forgot Password Row */}
         <div className="flex items-center justify-between pt-0.5">
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
@@ -171,16 +174,14 @@ const Login = () => {
                 setRememberMe(e.target.checked);
                 setValue("rememberMe", e.target.checked);
               }}
-              className="w-4 h-4 rounded border-gray-300 text-[#01a9a0] focus:ring-[#01a9a0] cursor-pointer accent-[#01a9a0]"
+              className="w-4 h-4 rounded border-gray-300 text-[#0070ba] focus:ring-[#0070ba] cursor-pointer accent-[#0070ba]"
             />
-            <span className="text-xs text-slate-600 dark:text-slate-300">
-              Remember Me
-            </span>
+            <span className="text-xs text-slate-600">Remember Me</span>
           </label>
 
           <Link
             to="/forgot-password"
-            className="text-xs font-medium text-[#01a9a0] hover:text-[#008f87] transition-colors"
+            className="text-xs font-medium text-[#0070ba] hover:text-[#005088] hover:underline transition-colors"
           >
             Forgot Password
           </Link>
@@ -190,25 +191,25 @@ const Login = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-[#01a9a0] hover:bg-[#008f87] text-white font-bold py-2.5 sm:py-3 px-6 rounded-full text-xs sm:text-sm tracking-wider uppercase shadow-md shadow-[#01a9a0]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+          className="w-full bg-[#0070ba] hover:bg-[#005fa0] text-white font-semibold py-3 px-6 rounded-xl sm:rounded-2xl text-sm sm:text-base tracking-wide shadow-md shadow-[#0070ba]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 cursor-pointer"
         >
           {isSubmitting ? (
             <>
               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>LOGGING IN...</span>
+              <span>Signing in...</span>
             </>
           ) : (
-            "LOG IN"
+            "Sign in"
           )}
         </button>
 
         {/* Sign up link */}
-        <div className="text-center pt-2">
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+        <div className="text-center pt-3">
+          <p className="text-xs text-slate-500">
             Don't have an account?{" "}
             <Link
               to="/signup"
-              className="text-[#01a9a0] font-semibold hover:underline"
+              className="text-[#0070ba] font-semibold hover:underline"
             >
               Sign up
             </Link>

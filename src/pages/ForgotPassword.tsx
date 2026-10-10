@@ -2,12 +2,12 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Mail, ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import AuthLayout from "@/components/auth/AuthLayout";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
+  email: z.string().min(1, { message: "Please enter your username or email" }),
 });
 
 type ForgotPasswordFormData = z.infer<typeof formSchema>;
@@ -46,30 +46,28 @@ const ForgotPassword = () => {
 
   return (
     <AuthLayout
-      badge="PASSWORD RECOVERY"
-      title="Reset your password"
+      welcomePrefix="Welcome to"
+      brandHighlight="ABC Trading LLC"
+      title="Reset Password"
       subtitle={
         isSuccess
           ? "Check your inbox for further instructions"
-          : "Enter your email to receive recovery instructions"
+          : "Enter your username or email address to receive recovery instructions"
       }
     >
       {isSuccess ? (
         <div className="space-y-4 text-center py-2">
-          <div className="w-12 h-12 bg-green-100 dark:bg-green-950/50 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto">
+          <div className="w-12 h-12 bg-[#f0f7fe] text-[#0070ba] rounded-full flex items-center justify-center mx-auto border border-[#d2e7f8]">
             <CheckCircle2 className="w-6 h-6" />
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 dark:text-white">
+            <h4 className="text-base font-semibold text-slate-800">
               Reset link sent!
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto">
+            </h4>
+            <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
               We've dispatched password reset instructions to{" "}
-              <strong className="text-slate-700 dark:text-slate-300">
-                {emailValue}
-              </strong>
-              .
+              <strong className="text-slate-700">{emailValue}</strong>.
             </p>
           </div>
 
@@ -77,16 +75,16 @@ const ForgotPassword = () => {
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="w-full bg-[#01a9a0] hover:bg-[#008f87] text-white font-bold py-2.5 sm:py-3 px-6 rounded-full text-xs sm:text-sm tracking-wider uppercase shadow-md shadow-[#01a9a0]/25 active:scale-[0.99] transition-all"
+              className="w-full bg-[#0070ba] hover:bg-[#005fa0] text-white font-semibold py-3 px-6 rounded-xl sm:rounded-2xl text-sm tracking-wide shadow-md shadow-[#0070ba]/25 active:scale-[0.99] transition-all cursor-pointer"
             >
-              BACK TO LOGIN
+              Back to Sign in
             </button>
           </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {resetError && (
-            <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 rounded-xl border border-red-200 dark:border-red-900/50">
+            <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 rounded-xl border border-red-200">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{resetError}</span>
             </div>
@@ -94,12 +92,14 @@ const ForgotPassword = () => {
 
           {/* Email input */}
           <div>
-            <div className="relative flex items-center bg-[#f1f3f7] dark:bg-slate-800/80 rounded-xl px-3.5 py-2.5 transition-all border border-slate-200/50 dark:border-slate-700/50 focus-within:border-[#01a9a0] focus-within:ring-2 focus-within:ring-[#01a9a0]/20 focus-within:bg-white dark:focus-within:bg-slate-800">
-              <Mail className="w-4 h-4 text-slate-400 shrink-0 mr-2.5" />
+            <label className="block text-xs sm:text-[13px] font-medium text-slate-700 mb-1.5">
+              Enter your username or email address
+            </label>
+            <div className="relative flex items-center bg-white rounded-xl border border-slate-200 focus-within:border-[#0070ba] focus-within:ring-2 focus-within:ring-[#0070ba]/20 transition-all">
               <input
-                type="email"
-                placeholder="Email"
-                className="w-full bg-transparent border-0 outline-none text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 font-normal"
+                type="text"
+                placeholder="Username or email address"
+                className="w-full bg-transparent border-0 outline-none px-3.5 py-2.5 sm:py-3 text-sm text-slate-800 placeholder:text-slate-400 font-normal rounded-xl"
                 {...register("email")}
               />
             </div>
@@ -114,26 +114,26 @@ const ForgotPassword = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#01a9a0] hover:bg-[#008f87] text-white font-bold py-2.5 sm:py-3 px-6 rounded-full text-xs sm:text-sm tracking-wider uppercase shadow-md shadow-[#01a9a0]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+            className="w-full bg-[#0070ba] hover:bg-[#005fa0] text-white font-semibold py-3 px-6 rounded-xl sm:rounded-2xl text-sm sm:text-base tracking-wide shadow-md shadow-[#0070ba]/25 active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4 cursor-pointer"
           >
             {isSubmitting ? (
               <>
                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>SENDING LINK...</span>
+                <span>Sending link...</span>
               </>
             ) : (
-              "SEND RESET LINK"
+              "Send Reset Link"
             )}
           </button>
 
           {/* Back to login */}
-          <div className="text-center pt-2">
+          <div className="text-center pt-3">
             <Link
               to="/login"
-              className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-[#01a9a0] dark:text-slate-400 dark:hover:text-[#01a9a0] transition-colors font-medium"
+              className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-[#0070ba] transition-colors font-medium"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Login</span>
+              <span>Back to Sign in</span>
             </Link>
           </div>
         </form>
