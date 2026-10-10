@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import LanguageSelector from "@/components/LanguageSelector";
+import ThemeToggle from "@/components/ThemeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -418,6 +419,9 @@ const Navbar = ({
                       <LanguageSelector />
                     </div>
 
+                    {/* Theme Toggle (Light / Dark mode) */}
+                    <ThemeToggle />
+
                     {/* User Profile */}
                     <DropdownMenu>
                       <DropdownMenuTrigger className="cursor-pointer p-2">
@@ -761,6 +765,9 @@ const Navbar = ({
                   <div className="relative">
                     <LanguageSelector />
                   </div>
+
+                  {/* Theme Toggle (Light / Dark mode) */}
+                  <ThemeToggle />
 
                   {/* User Profile */}
                   <DropdownMenu>
