@@ -2,11 +2,11 @@ import { logout } from "@/store/authSlice";
 import clsx from "clsx";
 import {
   Bell,
-  Heart,
   History,
   Maximize2,
   Menu,
   Search,
+  Star,
   UserCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -140,6 +140,7 @@ const Navbar = ({
                   isOpen={isSearchOpen}
                   onOpenChange={setIsSearchOpen}
                   align="end"
+                  defaultCategory="All"
                   trigger={
                     <button
                       className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
@@ -147,6 +148,36 @@ const Navbar = ({
                       title="Search (Ctrl+K)"
                     >
                       <Search size={18} />
+                    </button>
+                  }
+                />
+
+                {/* Recently Opened Dropdown */}
+                <UnifiedSearchDropdown
+                  align="end"
+                  defaultCategory="Recent"
+                  trigger={
+                    <button
+                      className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                      aria-label="Recently Opened"
+                      title="Recently Opened"
+                    >
+                      <History size={18} />
+                    </button>
+                  }
+                />
+
+                {/* Favorite Menus Dropdown */}
+                <UnifiedSearchDropdown
+                  align="end"
+                  defaultCategory="Favorites"
+                  trigger={
+                    <button
+                      className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                      aria-label="Favorite Menus"
+                      title="Favorite Menus"
+                    >
+                      <Star size={18} />
                     </button>
                   }
                 />
@@ -165,25 +196,6 @@ const Navbar = ({
                     )}
                   </button>
                 </div>
-
-                {/* Favorites */}
-                <button
-                  className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                  aria-label={t("navbar.favorites")}
-                >
-                  <Heart size={18} />
-                </button>
-
-                {/* Recent */}
-                <button
-                  className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                  aria-label={t("navbar.recent")}
-                  onClick={() => {
-                    navigate("/recent");
-                  }}
-                >
-                  <History size={18} />
-                </button>
 
                 {/* Language Toggle */}
                 <div className="relative">
@@ -314,24 +326,35 @@ const Navbar = ({
                     </button>
                   </div>
 
-                  {/* Favorites */}
-                  <button
-                    className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                    aria-label={t("navbar.favorites")}
-                  >
-                    <Heart size={20} />
-                  </button>
+                  {/* Recently Opened Dropdown */}
+                  <UnifiedSearchDropdown
+                    align="end"
+                    defaultCategory="Recent"
+                    trigger={
+                      <button
+                        className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                        aria-label="Recently Opened"
+                        title="Recently Opened"
+                      >
+                        <History size={20} />
+                      </button>
+                    }
+                  />
 
-                  {/* Recent */}
-                  <button
-                    className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                    aria-label={t("navbar.recent")}
-                    onClick={() => {
-                      navigate("/recent");
-                    }}
-                  >
-                    <History size={20} />
-                  </button>
+                  {/* Favorite Menus Dropdown */}
+                  <UnifiedSearchDropdown
+                    align="end"
+                    defaultCategory="Favorites"
+                    trigger={
+                      <button
+                        className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                        aria-label="Favorite Menus"
+                        title="Favorite Menus"
+                      >
+                        <Star size={20} />
+                      </button>
+                    }
+                  />
 
                   {/* Language Toggle */}
                   <div className="relative">
