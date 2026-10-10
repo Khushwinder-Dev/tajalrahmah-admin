@@ -16,6 +16,8 @@ import { useNavigate } from "react-router-dom";
 import LanguageSelector from "@/components/LanguageSelector";
 import ThemeToggle from "@/components/ThemeToggle";
 import UnifiedSearchDropdown from "@/components/common/UnifiedSearchDropdown";
+import RecentlyOpenedDropdown from "@/components/common/RecentlyOpenedDropdown";
+import FavoriteMenusDropdown from "@/components/common/FavoriteMenusDropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -153,9 +155,8 @@ const Navbar = ({
                 />
 
                 {/* Recently Opened Dropdown */}
-                <UnifiedSearchDropdown
+                <RecentlyOpenedDropdown
                   align="end"
-                  defaultCategory="Recent"
                   trigger={
                     <button
                       className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
@@ -168,9 +169,8 @@ const Navbar = ({
                 />
 
                 {/* Favorite Menus Dropdown */}
-                <UnifiedSearchDropdown
+                <FavoriteMenusDropdown
                   align="end"
-                  defaultCategory="Favorites"
                   trigger={
                     <button
                       className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
@@ -327,9 +327,8 @@ const Navbar = ({
                   </div>
 
                   {/* Recently Opened Dropdown */}
-                  <UnifiedSearchDropdown
+                  <RecentlyOpenedDropdown
                     align="end"
-                    defaultCategory="Recent"
                     trigger={
                       <button
                         className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
@@ -342,9 +341,8 @@ const Navbar = ({
                   />
 
                   {/* Favorite Menus Dropdown */}
-                  <UnifiedSearchDropdown
+                  <FavoriteMenusDropdown
                     align="end"
-                    defaultCategory="Favorites"
                     trigger={
                       <button
                         className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"

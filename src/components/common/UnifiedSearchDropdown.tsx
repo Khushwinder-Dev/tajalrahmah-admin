@@ -16,12 +16,6 @@ import {
   Warehouse,
   BookOpen,
   ClipboardList,
-  Clock,
-  Star,
-  FileText,
-  Package,
-  ShoppingCart,
-  Users,
 } from "lucide-react";
 import clsx from "clsx";
 import {
@@ -38,63 +32,6 @@ export interface SearchItem {
   icon: LucideIcon;
   path?: string;
 }
-
-export interface RecentItem {
-  id: string;
-  title: string;
-  time: string;
-  icon: LucideIcon;
-  path: string;
-}
-
-export interface FavoriteItem {
-  id: string;
-  title: string;
-  category?: string;
-  icon: LucideIcon;
-  path: string;
-}
-
-const DEFAULT_RECENT_ITEMS: RecentItem[] = [
-  {
-    id: "sales-invoice",
-    title: "Sales Invoice",
-    time: "Just now",
-    icon: FileText,
-    path: "/sales-invoice",
-  },
-  {
-    id: "item-master",
-    title: "Item Master",
-    time: "5 min ago",
-    icon: Package,
-    path: "/item",
-  },
-  {
-    id: "purchase-invoice",
-    title: "Purchase Invoice",
-    time: "15 min ago",
-    icon: ShoppingCart,
-    path: "/purchase-invoice",
-  },
-];
-
-const DEFAULT_FAVORITE_ITEMS: FavoriteItem[] = [
-  {
-    id: "sales-invoice",
-    title: "Sales Invoice",
-    category: "Invoices",
-    icon: FileText,
-    path: "/sales-invoice",
-  },
-  {
-    id: "customer-master",
-    title: "Customer Master",
-    category: "Customers",
-    icon: Users,
-    path: "/customer-master",
-  },
-];
 
 const DEFAULT_SEARCH_ITEMS: SearchItem[] = [
   {
@@ -181,8 +118,6 @@ const DEFAULT_SEARCH_ITEMS: SearchItem[] = [
 
 export const CATEGORIES = [
   "All",
-  "Recent",
-  "Favorites",
   "Services",
   "Solutions",
   "Projects",
@@ -197,7 +132,6 @@ interface UnifiedSearchDropdownProps {
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   align?: "start" | "center" | "end";
-  defaultCategory?: Category;
 }
 
 export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
@@ -205,7 +139,6 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
   isOpen: controlledOpen,
   onOpenChange,
   align = "end",
-  defaultCategory = "All",
 }) => {
   const navigate = useNavigate();
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
@@ -220,26 +153,23 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
   };
 
   const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<Category>(defaultCategory);
+  const [activeCategory, setActiveCategory] = useState<Category>("All");
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [favorites, setFavorites] = useState<FavoriteItem[]>(DEFAULT_FAVORITE_ITEMS);
-  const [recentItems] = useState<RecentItem[]>(DEFAULT_RECENT_ITEMS);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Sync defaultCategory when opening
   useEffect(() => {
     if (open) {
-      setActiveCategory(defaultCategory);
       setTimeout(() => {
         inputRef.current?.focus();
       }, 50);
       setAiResponse(null);
     } else {
       setQuery("");
+      setActiveCategory("All");
       setAiResponse(null);
     }
-  }, [open, defaultCategory]);
+  }, [open]);
 
   // Global shortcut (Ctrl+K or Cmd+K)
   useEffect(() => {
@@ -253,15 +183,11 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
-  // Filter items based on active category & query
-  const filteredCatalogItems = useMemo(() => {
+  const filteredItems = useMemo(() => {
     return DEFAULT_SEARCH_ITEMS.filter((item) => {
-      const q = query.trim().toLowerCase();
       const matchesCategory =
-        activeCategory === "All" ||
-        activeCategory === "Recent" ||
-        activeCategory === "Favorites" ||
-        item.category === activeCategory;
+        activeCategory === "All" || item.category === activeCategory;
+      const q = query.trim().toLowerCase();
       const matchesQuery =
         !q ||
         item.title.toLowerCase().includes(q) ||
@@ -271,42 +197,12 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
     });
   }, [query, activeCategory]);
 
-  const filteredRecent = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return recentItems;
-    return recentItems.filter((item) =>
-      item.title.toLowerCase().includes(q)
-    );
-  }, [query, recentItems]);
-
-  const filteredFavorites = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return favorites;
-    return favorites.filter((item) =>
-      item.title.toLowerCase().includes(q)
-    );
-  }, [query, favorites]);
-
-  const handleItemClick = (path?: string) => {
-    if (path) {
-      navigate(path);
+  const handleItemClick = (item: SearchItem) => {
+    if (item.path) {
+      navigate(item.path);
     }
     setOpen(false);
   };
-
-  const toggleFavorite = (item: { id: string; title: string; icon: LucideIcon; path: string }, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setFavorites((prev) => {
-      const exists = prev.some((fav) => fav.id === item.id);
-      if (exists) {
-        return prev.filter((fav) => fav.id !== item.id);
-      } else {
-        return [...prev, { id: item.id, title: item.title, icon: item.icon, path: item.path }];
-      }
-    });
-  };
-
-  const isFavorited = (id: string) => favorites.some((f) => f.id === id);
 
   const handleAskAi = () => {
     setIsAiLoading(true);
@@ -315,8 +211,8 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
       setIsAiLoading(false);
       setAiResponse(
         query
-          ? `AI Agent: Found relevant matches for "${query}" across your recent and favorite menus.`
-          : "AI Agent: How can I help you navigate your recent or favorite ERP modules today?"
+          ? `AI Agent: Found 3 relevant matches for "${query}" in ERP services & solutions.`
+          : "AI Agent: How can I help you find services, solutions, or ERP records today?"
       );
     }, 600);
   };
@@ -343,7 +239,7 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
         sideOffset={10}
         className="w-[calc(100vw-24px)] sm:w-[500px] md:w-[540px] max-w-[560px] p-5 sm:p-6 rounded-[28px] bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-[0_20px_60px_rgba(0,0,0,0.18)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.7)] z-50 flex flex-col gap-4 outline-none animate-in fade-in-0 zoom-in-95 duration-150"
       >
-        {/* Top Search Input Box with Teal/Brand Border */}
+        {/* Top Search Input Box with Teal/Brand Border (No Mic, No Camera) */}
         <div className="flex items-center w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl border-2 border-[#009b90] dark:border-[#008f87] bg-white dark:bg-gray-800 shadow-xs focus-within:ring-2 focus-within:ring-[#009b90]/30 transition-all">
           <Search className="w-5 h-5 text-[#009b90] dark:text-[#38bdf8] mr-3 shrink-0 stroke-[2.2]" />
 
@@ -352,7 +248,7 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search menus, invoices, customers..."
+            placeholder="Search..."
             className="flex-1 bg-transparent border-0 outline-none text-sm sm:text-base text-gray-800 dark:text-gray-100 placeholder-gray-400 font-normal"
           />
 
@@ -374,7 +270,7 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
           </button>
         </div>
 
-        {/* Filter Pills with Recent & Favorites included */}
+        {/* Filter Pills (All, Services, Solutions, Projects, Industries, Resources) */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 hide-scrollbar">
           {CATEGORIES.map((cat) => {
             const isActive = activeCategory === cat;
@@ -384,200 +280,69 @@ export const UnifiedSearchDropdown: React.FC<UnifiedSearchDropdownProps> = ({
                 type="button"
                 onClick={() => setActiveCategory(cat)}
                 className={clsx(
-                  "px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0 flex items-center gap-1.5",
+                  "px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer shrink-0",
                   isActive
                     ? "bg-[#e6f7f6] dark:bg-[#008f87]/25 text-[#008f87] dark:text-[#55d1c9] border border-[#008f87]/30 shadow-xs"
                     : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200/80 dark:hover:bg-gray-700"
                 )}
               >
-                {cat === "Recent" && <Clock className="w-3.5 h-3.5 stroke-[2]" />}
-                {cat === "Favorites" && <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />}
-                <span>{cat}</span>
+                {cat}
               </button>
             );
           })}
         </div>
 
-        {/* Results Container */}
-        <div className="max-h-[340px] sm:max-h-[380px] overflow-y-auto space-y-4 pr-1 custom-scrollbar">
-          {/* 1. RECENTLY OPENED SECTION (When All or Recent is selected) */}
-          {(activeCategory === "All" || activeCategory === "Recent") && filteredRecent.length > 0 && (
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2 px-1 text-xs font-bold text-gray-900 dark:text-gray-100 tracking-wide">
-                <Clock className="w-4 h-4 text-gray-600 dark:text-gray-300 stroke-[2.2]" />
-                <span>Recently Opened</span>
-              </div>
-              <div className="space-y-1">
-                {filteredRecent.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => handleItemClick(item.path)}
-                      className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors text-left group cursor-pointer"
-                    >
-                      <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 flex items-center justify-center shrink-0 group-hover:bg-[#009b90] group-hover:text-white transition-all">
-                          <Icon className="w-5 h-5 stroke-[1.8]" />
-                        </div>
-                        <span className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#009b90] dark:group-hover:text-[#55d1c9] transition-colors truncate">
-                          {item.title}
-                        </span>
-                      </div>
+        {/* Section Header */}
+        <div className="flex items-center justify-between pt-1">
+          <span className="text-[11px] sm:text-xs font-bold text-gray-900 dark:text-gray-200 uppercase tracking-wider">
+            {query.trim() ? `Search Results (${filteredItems.length})` : "MOST USED"}
+          </span>
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              className="text-xs text-[#009b90] dark:text-[#38bdf8] hover:underline cursor-pointer font-medium"
+            >
+              Clear filter
+            </button>
+          )}
+        </div>
 
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-400 dark:text-gray-500 font-medium shrink-0">
-                          {item.time}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-[#009b90] dark:group-hover:text-[#55d1c9] transition-all" />
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+        {/* Results List Items */}
+        <div className="max-h-[280px] sm:max-h-[310px] overflow-y-auto space-y-1.5 pr-1 custom-scrollbar">
+          {filteredItems.length > 0 ? (
+            filteredItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleItemClick(item)}
+                  className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-all cursor-pointer group text-left"
+                >
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-[#eaf8f7] dark:bg-[#008f87]/15 border border-[#c1ede9] dark:border-[#008f87]/30 text-[#008f87] dark:text-[#55d1c9] flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-[#009b90] group-hover:text-white group-hover:border-[#009b90] transition-all duration-150">
+                      <Icon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.8]" />
+                    </div>
+
+                    <div className="min-w-0">
+                      <h4 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white truncate group-hover:text-[#009b90] dark:group-hover:text-[#55d1c9] transition-colors leading-tight">
+                        {item.title}
+                      </h4>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 font-normal truncate mt-0.5">
+                        {item.subtitle}
+                      </p>
+                    </div>
+                  </div>
+
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300 dark:text-gray-600 group-hover:text-[#009b90] dark:group-hover:text-[#55d1c9] group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                </button>
+              );
+            })
+          ) : (
+            <div className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+              No results found for "{query}"
             </div>
           )}
-
-          {/* 2. FAVORITE MENUS SECTION (When All or Favorites is selected) */}
-          {(activeCategory === "All" || activeCategory === "Favorites") && filteredFavorites.length > 0 && (
-            <div className="space-y-1.5 pt-1">
-              <div className="flex items-center gap-2 px-1 text-xs font-bold text-gray-900 dark:text-gray-100 tracking-wide">
-                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                <span>Favorite Menus</span>
-              </div>
-              <div className="space-y-1">
-                {filteredFavorites.map((item) => {
-                  const Icon = item.icon;
-                  const favorited = isFavorited(item.id);
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => handleItemClick(item.path)}
-                      className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors text-left group cursor-pointer"
-                    >
-                      <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 flex items-center justify-center shrink-0 group-hover:bg-[#009b90] group-hover:text-white transition-all">
-                          <Icon className="w-5 h-5 stroke-[1.8]" />
-                        </div>
-                        <span className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#009b90] dark:group-hover:text-[#55d1c9] transition-colors truncate">
-                          {item.title}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={(e) => toggleFavorite(item, e)}
-                          className="p-1 hover:scale-110 transition-transform cursor-pointer"
-                          title={favorited ? "Remove from favorites" : "Add to favorites"}
-                        >
-                          <Star
-                            className={clsx(
-                              "w-4 h-4 transition-colors",
-                              favorited
-                                ? "text-amber-500 fill-amber-500"
-                                : "text-gray-300 dark:text-gray-600 hover:text-amber-500"
-                            )}
-                          />
-                        </button>
-                        <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-[#009b90] dark:group-hover:text-[#55d1c9] transition-all" />
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* 3. CATALOG / MOST USED ITEMS (When All or specific category is selected) */}
-          {activeCategory !== "Recent" && activeCategory !== "Favorites" && filteredCatalogItems.length > 0 && (
-            <div className="space-y-1.5 pt-1">
-              <div className="flex items-center justify-between px-1">
-                <span className="text-[11px] sm:text-xs font-bold text-gray-900 dark:text-gray-200 uppercase tracking-wider">
-                  {query.trim() ? `Catalog Results (${filteredCatalogItems.length})` : "MOST USED"}
-                </span>
-                {query && (
-                  <button
-                    onClick={() => setQuery("")}
-                    className="text-xs text-[#009b90] dark:text-[#38bdf8] hover:underline cursor-pointer font-medium"
-                  >
-                    Clear filter
-                  </button>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                {filteredCatalogItems.map((item) => {
-                  const Icon = item.icon;
-                  const favorited = isFavorited(item.id);
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => handleItemClick(item.path)}
-                      className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-all cursor-pointer group text-left"
-                    >
-                      <div className="flex items-center gap-3.5 min-w-0">
-                        {/* Rounded soft-teal icon badge matching reference */}
-                        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-[#eaf8f7] dark:bg-[#008f87]/15 border border-[#c1ede9] dark:border-[#008f87]/30 text-[#008f87] dark:text-[#55d1c9] flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-[#009b90] group-hover:text-white group-hover:border-[#009b90] transition-all duration-150">
-                          <Icon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.8]" />
-                        </div>
-
-                        <div className="min-w-0">
-                          <h4 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white truncate group-hover:text-[#009b90] dark:group-hover:text-[#55d1c9] transition-colors leading-tight">
-                            {item.title}
-                          </h4>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 font-normal truncate mt-0.5">
-                            {item.subtitle}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={(e) =>
-                            toggleFavorite(
-                              {
-                                id: item.id,
-                                title: item.title,
-                                icon: item.icon,
-                                path: item.path || "/services",
-                              },
-                              e
-                            )
-                          }
-                          className="p-1 hover:scale-110 transition-transform cursor-pointer"
-                          title={favorited ? "Remove from favorites" : "Add to favorites"}
-                        >
-                          <Star
-                            className={clsx(
-                              "w-4 h-4 transition-colors",
-                              favorited
-                                ? "text-amber-500 fill-amber-500"
-                                : "text-gray-300 dark:text-gray-600 hover:text-amber-500"
-                            )}
-                          />
-                        </button>
-                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300 dark:text-gray-600 group-hover:text-[#009b90] dark:group-hover:text-[#55d1c9] group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Empty state when no matches */}
-          {filteredRecent.length === 0 &&
-            filteredFavorites.length === 0 &&
-            filteredCatalogItems.length === 0 && (
-              <div className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-                No results found for "{query}"
-              </div>
-            )}
         </div>
 
         {/* AI Agent Banner / Response */}
