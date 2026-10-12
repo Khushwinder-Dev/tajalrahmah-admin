@@ -4,6 +4,8 @@
   "code": "Code",
   "calling": "Calling",
   "country": "Country",
+  "countryName": "Country Name",
+  "countryCode": "Country Code",
   "insurances": "Insurances",
   "certificates": "Certificates",
   "financialYear": "Financial Year",

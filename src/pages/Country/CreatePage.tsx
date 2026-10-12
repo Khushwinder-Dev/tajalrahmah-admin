@@ -538,8 +538,8 @@ export default function CountryFormPage({ isEdit = false }: Props) {
             onSubmit={handleSubmit}
             className="space-y-6 relative"
           >
-            {/* First Row: Code, Calling Code, Country */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-8 relative">
+            {/* First Row: Code, Country */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-8 relative">
               {/* Code field - only show if user can create */}
               {canCreate && (
                 <div className="space-y-2">
@@ -553,16 +553,16 @@ export default function CountryFormPage({ isEdit = false }: Props) {
                     onValueChange={(value: string) => {
                       setFormData({ ...formData, code: value });
                       if (value) {
-                        focusNextInput("ISD");
+                        focusNextInput("title");
                       }
                     }}
                     onEnterPress={() => {
                       if (formData.code) {
-                        focusNextInput("ISD");
+                        focusNextInput("title");
                       }
                     }}
                     placeholder=" "
-                    labelText={labels.code}
+                    labelText={labels.countryCode || "Country Code"}
                     className="relative"
                     tooltipText={labels.countryCodeTooltip}
                     userLang={isRTL ? "ar" : "en"}
@@ -581,24 +581,6 @@ export default function CountryFormPage({ isEdit = false }: Props) {
                 </div>
               )}
 
-              {/* Calling Code field - only show if user can create */}
-              {ISD && (
-                <div className="space-y-2">
-                  <EditableInput
-                    setRef={setRef("ISD")}
-                    id="ISD"
-                    name="ISD"
-                    value={formData.ISD}
-                    onChange={handleChange}
-                    onNext={() => focusNextInput("title")}
-                    onCancel={() => setFormData({ ...formData, ISD: "" })}
-                    labelText="ISD"
-                    tooltipText={labels.isdTooltip}
-                    required
-                  />
-                </div>
-              )}
-
               {/* Country field - only show if user can create */}
               {countryName && (
                 <div className="space-y-2">
@@ -609,9 +591,9 @@ export default function CountryFormPage({ isEdit = false }: Props) {
                       name="title"
                       value={formData.title}
                       onChange={handleChange}
-                      onNext={() => focusNextInput("isDefault")}
+                      onNext={() => {}}
                       onCancel={() => setFormData({ ...formData, title: "" })}
-                      labelText={labels.country}
+                      labelText={labels.countryName || "Country Name"}
                       tooltipText={labels.countryNameTooltip}
                       required
                     />
@@ -628,9 +610,6 @@ export default function CountryFormPage({ isEdit = false }: Props) {
                           title_ur: values.ur || "",
                           title_bn: values.bn || "",
                         }));
-                        setTimeout(() => {
-                          focusNextInput("isDefault");
-                        }, 100);
                       }}
                       title="Country Name"
                       initialValues={countryLanguageValues}
@@ -638,182 +617,7 @@ export default function CountryFormPage({ isEdit = false }: Props) {
                   </div>
                 </div>
               )}
-
-              {/* Draft field - only show if user can create */}
-              {isDefault && (
-                <div className="space-y-2 relative">
-                  <SwitchSelect
-                    ref={(el: any) => setRef("isDefault")(el)}
-                    id="isDefault"
-                    name="isDefault"
-                    multiSelect={false}
-                    options={[
-                      {
-                        label: labels.yes,
-                        value: labels.yes,
-                        date: "Set default country",
-                      },
-                      {
-                        label: labels.no,
-                        value: labels.no,
-                        date: "Remove default country",
-                      },
-                    ]}
-                    value={isDefaultState === "Yes" ? labels.yes : labels.no}
-                    labelClassName="rounded-lg"
-                    onValueChange={(value: string | string[]) => {
-                      const isYes = Array.isArray(value)
-                        ? value[0] === labels.yes
-                        : value === labels.yes;
-                      setIsDefaultState(isYes ? "Yes" : "No");
-                      const newValue = isYes;
-                      setFormData((prev) => ({
-                        ...prev,
-                        isDefault: newValue,
-                      }));
-                      focusNextInput("status");
-                    }}
-                    onEnterPress={() => {
-                      if (
-                        formData.isDefault === true ||
-                        formData.isDefault === false
-                      ) {
-                        focusNextInput("isDeleted");
-                      }
-                    }}
-                    placeholder=" "
-                    labelText={labels.default}
-                    className="relative"
-                    tooltipText={labels.defaultCountryTooltip}
-                  />
-                </div>
-              )}
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 my-8 relative">
-              {isStatusActive && (
-                <div className="md:col-span-3 space-y-2">
-                  <SwitchSelect
-                    ref={(el: any) => setRef("status")(el)}
-                    id="status"
-                    name="status"
-                    labelText="Status"
-                    multiSelect={false} // Single select mode
-                    options={[
-                      {
-                        label: "Active",
-                        value: "Active",
-                        date: "Set active",
-                      },
-                      { label: "Draft", value: "Draft", date: "Set draft" },
-                    ]}
-                    value={statusState}
-                    onValueChange={(value: string | string[]) => {
-                      const stringValue = Array.isArray(value)
-                        ? value[0] || ""
-                        : value;
-                      console.log("switch value", stringValue);
-                      setStatusState(stringValue);
-
-                      // Update your form data
-                      setFormData((prev) => ({
-                        ...prev,
-                        isDraft: stringValue === "Draft",
-                        isActive: stringValue === "Active",
-                      }));
-                    }}
-                    placeholder=""
-                    styles={{
-                      input: {
-                        borderColor: "var(--primary)",
-                        "&:focus": {
-                          borderColor: "var(--primary)",
-                        },
-                      },
-                    }}
-                    tooltipText={labels.statusTooltip}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Flag Upload - only show if user can create */}
-            {flag && (
-              // <div className="space-y-2 my-8 pt-4 cursor-pointer relative">
-              //   <div
-              //     className={`border-2 border-dashed rounded-lg p-6 bg-[#f8fafc] text-center focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary ${
-              //       isDragging
-              //         ? "border-blue-500 bg-blue-50"
-              //         : "border-gray-300"
-              //     }`}
-              //     tabIndex={0}
-              //     ref={(el) => setRef("fileUploadElement")(el as HTMLElement)}
-              //     onDragEnter={handleDragEnter}
-              //     onDragLeave={handleDragLeave}
-              //     onDragOver={handleDragOver}
-              //     onDrop={handleDrop}
-              //     onClick={triggerFileInput}
-              //     onKeyDown={(e) => {
-              //       if (e.key === "Enter" || e.key === " ") {
-              //         e.preventDefault();
-              //         if (imagePreview) {
-              //           setImagePreview(null);
-              //           setFormData({ ...formData, flag: null });
-              //           setTimeout(() => {
-              //             triggerFileInput();
-              //           }, 0);
-              //         } else {
-              //           triggerFileInput();
-              //         }
-              //       }
-              //     }}
-              //   >
-              //     {imagePreview ? (
-              //       <div className="relative inline-block">
-              //         <img
-              //           src={imagePreview}
-              //           alt={labels.flagPreview}
-              //           className="w-40 h-28 object-contain rounded-md"
-              //         />
-              //         <Button
-              //           variant="ghost"
-              //           size="icon"
-              //           className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-white shadow-sm"
-              //           onClick={(e) => {
-              //             e.stopPropagation();
-              //             setImagePreview(null);
-              //             setFormData({ ...formData, flag: null });
-              //           }}
-              //         >
-              //           <X className="h-4 w-4" />
-              //         </Button>
-              //       </div>
-              //     ) : (
-              //       <div className="flex flex-col items-center justify-center gap-2 py-14">
-              //         <Upload className="h-10 w-10 text-gray-400" />
-              //         <p className="text-base text-gray-500">
-              //           {labels.dragDropImage}
-              //         </p>
-              //       </div>
-              //     )}
-              //     <input
-              //       ref={fileInputRef}
-              //       type="file"
-              //       onChange={handleImageChange}
-              //       accept="image/*"
-              //       className="hidden"
-              //     />
-              //   </div>
-              // </div>
-              <ImageUploader
-                onImageSelect={(file: any) => console.log("Selected:", file)}
-                existingImages={[
-                  "/sample1.png",
-                  "/sample1.png",
-                  "/sample1.png",
-                ]}
-              />
-            )}
           </form>
         </div>
       </MinimizablePageLayout>
