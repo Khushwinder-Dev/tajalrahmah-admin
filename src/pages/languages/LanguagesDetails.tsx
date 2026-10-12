@@ -19,12 +19,12 @@ import { usePermission } from "@/hooks/usePermissions";
 
 const MOCK_LANGUAGES = [
   { code: "en", name: "English", seq: 1, flag: "🇺🇸" },
-  { code: "es", name: "Spanish", seq: 2, flag: "🇪🇸" },
-  { code: "fr", name: "French", seq: 3, flag: "🇫🇷" },
-  { code: "ar", name: "Arabic", seq: 4, flag: "🇸🇦" },
-  { code: "hi", name: "Hindi", seq: 5, flag: "🇮🇳" },
-  { code: "ur", name: "Urdu", seq: 6, flag: "🇵🇰" },
-  { code: "bn", name: "Bengali", seq: 7, flag: "🇧🇩" },
+  // { code: "es", name: "Spanish", seq: 2, flag: "🇪🇸" },
+  // { code: "fr", name: "French", seq: 3, flag: "🇫🇷" },
+  // { code: "ar", name: "Arabic", seq: 4, flag: "🇸🇦" },
+  // { code: "hi", name: "Hindi", seq: 5, flag: "🇮🇳" },
+  // { code: "ur", name: "Urdu", seq: 6, flag: "🇵🇰" },
+  // { code: "bn", name: "Bengali", seq: 7, flag: "🇧🇩" },
 ];
 
 // Type definition for TypeScript
@@ -249,18 +249,18 @@ export default function LanguageDetailsPage() {
         onExport={
           canPdf && canPrint
             ? () => {
-                if (!pdfChecked && !printEnabled) {
-                  setShowExportModal(true);
-                  return;
-                }
-
-                if (pdfChecked) {
-                  handleExportPDF();
-                }
-                if (printEnabled) {
-                  handlePrintLanguage(languageData);
-                }
+              if (!pdfChecked && !printEnabled) {
+                setShowExportModal(true);
+                return;
               }
+
+              if (pdfChecked) {
+                handleExportPDF();
+              }
+              if (printEnabled) {
+                handlePrintLanguage(languageData);
+              }
+            }
             : undefined
         }
       >

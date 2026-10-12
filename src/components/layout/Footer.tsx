@@ -176,7 +176,7 @@ const Footer = () => {
       <footer className="border-t border-gray-200 dark:border-gray-700 h-14 px-6 bg-gray-100 dark:bg-gray-800 flex items-center shrink-0">
         <div className="flex justify-between items-center w-full cursor-pointer">
           {/* Left Section - Powered by (left-aligned) / Live Chat (right-aligned in RTL) */}
-          <div className="flex justify-start rtl:justify-end items-center cursor-pointer order-1 rtl:order-3">
+          <div className="hidden flex justify-start rtl:justify-end items-center cursor-pointer order-1 rtl:order-3">
             <span className="text-sm text-gray-500 dark:text-gray-400">
               Powered by{" "}
               <span
@@ -259,11 +259,10 @@ const Footer = () => {
                   key={tab.id}
                   variant="ghost"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-shrink-0 px-4 py-3 text-sm font-medium rounded-none border-b-2 transition-colors ${
-                    activeTab === tab.id
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:border-gray-300"
-                  }`}
+                  className={`flex-shrink-0 px-4 py-3 text-sm font-medium rounded-none border-b-2 transition-colors ${activeTab === tab.id
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:border-gray-300"
+                    }`}
                 >
                   {tab.label}
                 </Button>

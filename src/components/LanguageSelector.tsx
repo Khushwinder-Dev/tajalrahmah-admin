@@ -111,7 +111,8 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({
               </div>
             </div>
             <span className="px-2.5 py-0.5 text-[11px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-full">
-              {SUPPORTED_LANGUAGES.length} languages
+              {SUPPORTED_LANGUAGES.length}{" "}
+              {SUPPORTED_LANGUAGES.length === 1 ? "language" : "languages"}
             </span>
           </div>
 

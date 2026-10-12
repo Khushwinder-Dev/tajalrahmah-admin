@@ -9,15 +9,15 @@ export interface Language {
 
 export const SUPPORTED_LANGUAGES: Language[] = [
   { code: "en", name: "English", nativeName: "English" },
-  { code: "ar", name: "Arabic", nativeName: "العربية" },
-  { code: "zh", name: "Chinese (Mandarin)", nativeName: "中文" },
-  { code: "hi", name: "Hindi", nativeName: "हिन्दी" },
-  { code: "ur", name: "Urdu", nativeName: "اردو" },
-  { code: "bn", name: "Bangla", nativeName: "বাংলা" },
-  { code: "es", name: "Spanish", nativeName: "Español" },
-  { code: "fr", name: "French", nativeName: "Français" },
-  { code: "de", name: "German", nativeName: "Deutsch" },
-  { code: "ru", name: "Russian", nativeName: "Русский" },
+  // { code: "ar", name: "Arabic", nativeName: "العربية" },
+  // { code: "zh", name: "Chinese (Mandarin)", nativeName: "中文" },
+  // { code: "hi", name: "Hindi", nativeName: "हिन्दी" },
+  // { code: "ur", name: "Urdu", nativeName: "اردو" },
+  // { code: "bn", name: "Bangla", nativeName: "বাংলা" },
+  // { code: "es", name: "Spanish", nativeName: "Español" },
+  // { code: "fr", name: "French", nativeName: "Français" },
+  // { code: "de", name: "German", nativeName: "Deutsch" },
+  // { code: "ru", name: "Russian", nativeName: "Русский" },
 ];
 
 interface LanguageState {
